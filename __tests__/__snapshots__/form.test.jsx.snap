@@ -1,0 +1,1197 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`matches the initial form snapshot 1`] = `
+<div>
+  <div
+    style="font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; background: rgb(240, 251, 249); min-height: 100vh; color: rgb(22, 48, 44);"
+  >
+    <div
+      style="max-width: 440px; margin: 0px auto; padding-bottom: 120px;"
+    >
+      <div
+        style="background: rgb(15, 118, 110); padding: 28px 24px 32px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;"
+      >
+        <div
+          style="display: flex; align-items: center; gap: 14px;"
+        >
+          <svg
+            fill="none"
+            height="44"
+            viewBox="0 0 40 44"
+            width="40"
+          >
+            <rect
+              fill="#FBBF24"
+              height="6"
+              rx="2"
+              width="24"
+              x="8"
+              y="2"
+            />
+            <rect
+              fill="#F0FBF9"
+              height="34"
+              rx="6"
+              stroke="#FBBF24"
+              stroke-width="2"
+              width="28"
+              x="6"
+              y="8"
+            />
+            <path
+              d="M6 20h28"
+              opacity="0.6"
+              stroke="#FBBF24"
+              stroke-width="1.2"
+            />
+            <path
+              d="M6 30h28"
+              opacity="0.6"
+              stroke="#FBBF24"
+              stroke-width="1.2"
+            />
+          </svg>
+          <div>
+            <h1
+              style="margin: 0px; font-size: 26px; font-weight: 700; color: rgb(240, 251, 249); letter-spacing: 0.2px;"
+            >
+              Elle's Homemade Jams
+            </h1>
+            <p
+              style="margin: 4px 0px 0px; font-size: 14px; color: rgb(207, 240, 234); font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Small-batch, from our kitchen to yours
+            </p>
+          </div>
+        </div>
+        <p
+          style="margin: 14px 0px 0px; font-size: 13px; line-height: 1.45; color: rgb(207, 240, 234); font-family: system-ui, -apple-system, sans-serif;"
+        >
+          All products are made with organic fruit, sugar, 100% lemon juice, and pectin
+        </p>
+      </div>
+      <div
+        style="padding: 24px 20px 0px;"
+      >
+        <p
+          style="font-size: 13px; color: rgb(92, 138, 131); margin: 0px 0px 10px 4px; font-family: system-ui, -apple-system, sans-serif;"
+        >
+          Pick your flavors
+        </p>
+        <div
+          style="display: flex; flex-direction: column; gap: 12px;"
+        >
+          <div
+            data-testid="flavor-strawberry"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Strawberry
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Classic and sweet
+                </div>
+              </div>
+              <div
+                data-testid="flavor-strawberry-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-strawberry-jam-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jam
+                </div>
+                <div
+                  data-testid="line-strawberry-jam-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Strawberry 8oz jam"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-strawberry-jam-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Strawberry 8oz jam"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-strawberry-syrup-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz syrup
+                </div>
+                <div
+                  data-testid="line-strawberry-syrup-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $8.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Strawberry 8oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-strawberry-syrup-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Strawberry 8oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-strawberry-syrup-4oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  4oz syrup
+                </div>
+                <div
+                  data-testid="line-strawberry-syrup-4oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $5.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Strawberry 4oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-strawberry-syrup-4oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Strawberry 4oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-blueberry"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Blueberry
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Bright and fruity
+                </div>
+              </div>
+              <div
+                data-testid="flavor-blueberry-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-blueberry-jam-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jam
+                </div>
+                <div
+                  data-testid="line-blueberry-jam-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blueberry 8oz jam"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blueberry-jam-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blueberry 8oz jam"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-blueberry-syrup-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz syrup
+                </div>
+                <div
+                  data-testid="line-blueberry-syrup-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $8.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blueberry 8oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blueberry-syrup-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blueberry 8oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-blueberry-syrup-4oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  4oz syrup
+                </div>
+                <div
+                  data-testid="line-blueberry-syrup-4oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $5.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blueberry 4oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blueberry-syrup-4oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blueberry 4oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-apple-butter"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Apple butter
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Warm spice
+                </div>
+              </div>
+              <div
+                data-testid="flavor-apple-butter-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-apple-butter-butter-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz butter
+                </div>
+                <div
+                  data-testid="line-apple-butter-butter-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Apple butter 8oz butter"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-apple-butter-butter-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Apple butter 8oz butter"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-apple-butter-butter-12oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  12oz butter
+                </div>
+                <div
+                  data-testid="line-apple-butter-butter-12oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $12.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Apple butter 12oz butter"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-apple-butter-butter-12oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Apple butter 12oz butter"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-grape"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Grape
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Bold and jammy
+                </div>
+              </div>
+              <div
+                data-testid="flavor-grape-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-grape-jelly-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jelly
+                </div>
+                <div
+                  data-testid="line-grape-jelly-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Grape 8oz jelly"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-grape-jelly-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Grape 8oz jelly"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-grape-jelly-12oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  12oz jelly
+                </div>
+                <div
+                  data-testid="line-grape-jelly-12oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $12.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Grape 12oz jelly"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-grape-jelly-12oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Grape 12oz jelly"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-raspberry"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Raspberry
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Tart and bright
+                </div>
+              </div>
+              <div
+                data-testid="flavor-raspberry-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-raspberry-jam-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jam
+                </div>
+                <div
+                  data-testid="line-raspberry-jam-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Raspberry 8oz jam"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-raspberry-jam-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Raspberry 8oz jam"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-raspberry-syrup-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz syrup
+                </div>
+                <div
+                  data-testid="line-raspberry-syrup-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $8.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Raspberry 8oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-raspberry-syrup-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Raspberry 8oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-raspberry-syrup-4oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  4oz syrup
+                </div>
+                <div
+                  data-testid="line-raspberry-syrup-4oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $5.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Raspberry 4oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-raspberry-syrup-4oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Raspberry 4oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-blackberry"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Blackberry
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Deep and rich
+                </div>
+              </div>
+              <div
+                data-testid="flavor-blackberry-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-blackberry-jam-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jam
+                </div>
+                <div
+                  data-testid="line-blackberry-jam-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blackberry 8oz jam"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blackberry-jam-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blackberry 8oz jam"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-blackberry-syrup-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz syrup
+                </div>
+                <div
+                  data-testid="line-blackberry-syrup-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $8.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blackberry 8oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blackberry-syrup-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blackberry 8oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-blackberry-syrup-4oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  4oz syrup
+                </div>
+                <div
+                  data-testid="line-blackberry-syrup-4oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $5.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blackberry 4oz syrup"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blackberry-syrup-4oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blackberry 4oz syrup"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p
+          style="font-size: 13px; color: rgb(92, 138, 131); margin: 28px 0px 10px 4px; font-family: system-ui, -apple-system, sans-serif;"
+        >
+          Your details
+        </p>
+        <div
+          style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px;"
+        >
+          <label
+            style="display: block;"
+          >
+            <div
+              style="font-size: 13px; color: rgb(92, 138, 131); margin-bottom: 4px; font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Name
+            </div>
+            <input
+              placeholder="Jane Doe"
+              style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(191, 227, 221); background: rgb(255, 255, 255); font-size: 15px; font-family: system-ui, -apple-system, sans-serif; color: rgb(22, 48, 44);"
+              value=""
+            />
+          </label>
+          <label
+            style="display: block;"
+          >
+            <div
+              style="font-size: 13px; color: rgb(92, 138, 131); margin-bottom: 4px; font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Phone
+            </div>
+            <input
+              placeholder="(555) 012-3456"
+              style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(191, 227, 221); background: rgb(255, 255, 255); font-size: 15px; font-family: system-ui, -apple-system, sans-serif; color: rgb(22, 48, 44);"
+              type="tel"
+              value=""
+            />
+          </label>
+          <label
+            style="display: block;"
+          >
+            <div
+              style="font-size: 13px; color: rgb(92, 138, 131); margin-bottom: 4px; font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Fulfillment
+            </div>
+            <div
+              style="display: flex; gap: 10px;"
+            >
+              <button
+                style="flex: 1 1 0%; padding: 10px 0px; border-radius: 10px; border: 1.5px solid rgb(15, 118, 110); background: rgb(253, 230, 138); color: rgb(15, 118, 110); font-weight: 600; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-transform: capitalize;"
+                type="button"
+              >
+                pickup
+              </button>
+              <button
+                style="flex: 1 1 0%; padding: 10px 0px; border-radius: 10px; border: 1px solid rgb(191, 227, 221); background: rgb(255, 255, 255); color: rgb(63, 101, 96); font-weight: 600; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-transform: capitalize;"
+                type="button"
+              >
+                delivery
+              </button>
+            </div>
+          </label>
+          <label
+            style="display: block;"
+          >
+            <div
+              style="font-size: 13px; color: rgb(92, 138, 131); margin-bottom: 4px; font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Notes (optional)
+            </div>
+            <textarea
+              placeholder="Allergies, gift note, preferred pickup time..."
+              style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(191, 227, 221); background: rgb(255, 255, 255); font-size: 15px; font-family: system-ui, -apple-system, sans-serif; color: rgb(22, 48, 44); height: 64px; resize: none;"
+            />
+          </label>
+        </div>
+      </div>
+    </div>
+    <div
+      style="position: sticky; bottom: 0px; left: 0px; right: 0px; background: rgb(255, 255, 255); border-top: 1px solid rgb(191, 227, 221); padding: 14px 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);"
+    >
+      <div
+        style="max-width: 440px; margin: 0px auto;"
+      >
+        <div
+          style="display: flex; justify-content: space-between; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; color: rgb(63, 101, 96); margin-bottom: 8px;"
+        >
+          <span
+            data-testid="order-item-count"
+          >
+            0
+             item
+            s
+          </span>
+          <span
+            data-testid="order-total"
+            style="font-weight: 700; color: rgb(22, 48, 44);"
+          >
+            $0.00
+          </span>
+        </div>
+        <button
+          style="width: 100%; padding: 14px 0px; border-radius: 12px; background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 16px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif;"
+          type="button"
+        >
+          Review order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`reviews a complete pickup order and matches the summary snapshot 1`] = `
+<div>
+  <div
+    style="font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; background: rgb(240, 251, 249); min-height: 100vh; color: rgb(22, 48, 44);"
+  >
+    <div
+      style="max-width: 440px; margin: 0px auto; padding-bottom: 120px;"
+    >
+      <div
+        style="background: rgb(15, 118, 110); padding: 28px 24px 32px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;"
+      >
+        <div
+          style="display: flex; align-items: center; gap: 14px;"
+        >
+          <svg
+            fill="none"
+            height="44"
+            viewBox="0 0 40 44"
+            width="40"
+          >
+            <rect
+              fill="#FBBF24"
+              height="6"
+              rx="2"
+              width="24"
+              x="8"
+              y="2"
+            />
+            <rect
+              fill="#F0FBF9"
+              height="34"
+              rx="6"
+              stroke="#FBBF24"
+              stroke-width="2"
+              width="28"
+              x="6"
+              y="8"
+            />
+            <path
+              d="M6 20h28"
+              opacity="0.6"
+              stroke="#FBBF24"
+              stroke-width="1.2"
+            />
+            <path
+              d="M6 30h28"
+              opacity="0.6"
+              stroke="#FBBF24"
+              stroke-width="1.2"
+            />
+          </svg>
+          <div>
+            <h1
+              style="margin: 0px; font-size: 26px; font-weight: 700; color: rgb(240, 251, 249); letter-spacing: 0.2px;"
+            >
+              Elle's Homemade Jams
+            </h1>
+            <p
+              style="margin: 4px 0px 0px; font-size: 14px; color: rgb(207, 240, 234); font-family: system-ui, -apple-system, sans-serif;"
+            >
+              Small-batch, from our kitchen to yours
+            </p>
+          </div>
+        </div>
+        <p
+          style="margin: 14px 0px 0px; font-size: 13px; line-height: 1.45; color: rgb(207, 240, 234); font-family: system-ui, -apple-system, sans-serif;"
+        >
+          All products are made with organic fruit, sugar, 100% lemon juice, and pectin
+        </p>
+      </div>
+      <div
+        style="padding: 24px 20px 0px;"
+      >
+        <p
+          style="font-size: 13px; color: rgb(92, 138, 131); margin: 0px 0px 10px 4px; font-family: system-ui, -apple-system, sans-serif;"
+        >
+          Order summary
+        </p>
+        <div
+          style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 18px; font-family: system-ui, -apple-system, sans-serif;"
+        >
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0px; font-size: 15px;"
+          >
+            <span>
+              1
+               × 
+              Strawberry 8oz jam
+            </span>
+            <span>
+              $9.00
+            </span>
+          </div>
+          <div
+            style="border-top: 1px solid rgb(230, 247, 244); margin-top: 8px; padding-top: 10px; display: flex; justify-content: space-between; font-weight: 700; font-size: 16px;"
+          >
+            <span>
+              Total
+            </span>
+            <span>
+              $9.00
+            </span>
+          </div>
+          <div
+            style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgb(230, 247, 244); font-size: 14px; color: rgb(63, 101, 96); line-height: 1.6;"
+          >
+            <div>
+              Ada Lovelace
+            </div>
+            <div>
+              555-0100
+            </div>
+            <div>
+              Pickup
+            </div>
+          </div>
+        </div>
+        <div
+          style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;"
+        >
+          <a
+            href="sms:?&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20555-0100%0AFulfillment%3A%20Pickup"
+            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(15, 118, 110); color: rgb(240, 251, 249);"
+          >
+            Text this order
+          </a>
+          <a
+            href="mailto:?subject=Jam%20order%20from%20Ada%20Lovelace&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20555-0100%0AFulfillment%3A%20Pickup"
+            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(255, 255, 255); color: rgb(15, 118, 110); border: 1.5px solid rgb(15, 118, 110);"
+          >
+            Email this order
+          </a>
+          <button
+            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(255, 255, 255); color: rgb(63, 101, 96); border: 1px solid rgb(191, 227, 221);"
+            type="button"
+          >
+            Copy order details
+          </button>
+          <button
+            style="background: none; color: rgb(92, 138, 131); font-size: 14px; padding: 8px 0px; font-family: system-ui, -apple-system, sans-serif;"
+            type="button"
+          >
+            Start a new order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,19 +1,12 @@
 import React, { useState, useMemo } from "react";
-
-const FLAVORS = [
-  { id: "strawberry", name: "Strawberry", note: "Classic and sweet" },
-  { id: "blueberry", name: "Blueberry", note: "Bright and fruity" },
-  { id: "apple-butter", name: "Apple butter", note: "Warm spice" },
-  { id: "grape", name: "Grape", note: "Bold and jammy" },
-  { id: "raspberry", name: "Raspberry", note: "Tart and bright" },
-  { id: "blackberry", name: "Blackberry", note: "Deep and rich" },
-];
-
-const PRICE_PER_JAR = 9;
-
-function currency(n) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
+import {
+  FLAVORS,
+  applyQtyChange,
+  currency,
+  flavorSubtotal,
+  getQty,
+  orderLines,
+} from "./order.js";
 
 export default function JamOrderForm() {
   const [qty, setQty] = useState({});
@@ -26,27 +19,27 @@ export default function JamOrderForm() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const jarCount = useMemo(
-    () => Object.values(qty).reduce((a, b) => a + b, 0),
-    [qty]
+  const lines = useMemo(() => orderLines(qty), [qty]);
+  const itemCount = useMemo(
+    () => lines.reduce((sum, line) => sum + line.n, 0),
+    [lines]
   );
-  const total = jarCount * PRICE_PER_JAR;
+  const total = useMemo(
+    () => lines.reduce((sum, line) => sum + line.amount, 0),
+    [lines]
+  );
 
-  function changeQty(id, delta) {
-    setQty((prev) => {
-      const next = Math.max(0, (prev[id] || 0) + delta);
-      return { ...prev, [id]: next };
-    });
+  function changeQty(flavorId, productId, delta) {
+    setQty((prev) => applyQtyChange(prev, flavorId, productId, delta));
   }
 
   function buildSummary() {
-    const lines = FLAVORS.filter((f) => qty[f.id] > 0).map(
-      (f) => `${qty[f.id]} x ${f.name} (8oz) — ${currency(qty[f.id] * PRICE_PER_JAR)}`
-    );
     return [
       "Jam order",
-      ...lines,
-      `Total (${jarCount} jar${jarCount === 1 ? "" : "s"}): ${currency(total)}`,
+      ...lines.map(
+        (line) => `${line.n} x ${line.label} — ${currency(line.amount)}`
+      ),
+      `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(total)}`,
       "",
       `Name: ${name}`,
       `Phone: ${phone}`,
@@ -59,8 +52,8 @@ export default function JamOrderForm() {
   }
 
   function handleReview() {
-    if (jarCount === 0) {
-      setError("Add at least one jar to your order.");
+    if (itemCount === 0) {
+      setError("Add at least one item to your order.");
       return;
     }
     if (!name.trim()) {
@@ -148,61 +141,32 @@ export default function JamOrderForm() {
               </p>
             </div>
           </div>
+          <p
+            style={{
+              margin: "14px 0 0",
+              fontSize: 13,
+              lineHeight: 1.45,
+              color: "#CFF0EA",
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            All products are made with organic fruit, sugar, 100% lemon juice,
+            and pectin
+          </p>
         </div>
 
         {step === "form" ? (
           <div style={{ padding: "24px 20px 0" }}>
             {/* Flavors */}
-            <SectionLabel>Pick your 8oz jars — {currency(PRICE_PER_JAR)} each</SectionLabel>
-            <div
-              style={{
-                background: "#FFFFFF",
-                border: "1px solid #BFE3DD",
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
-            >
-              {FLAVORS.map((f, i) => (
-                <div
+            <SectionLabel>Pick your flavors</SectionLabel>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {FLAVORS.map((f) => (
+                <FlavorSection
                   key={f.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "14px 16px",
-                    borderBottom:
-                      i < FLAVORS.length - 1 ? "1px solid #E6F7F4" : "none",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 600,
-                        fontFamily: "system-ui, -apple-system, sans-serif",
-                      }}
-                    >
-                      {f.name}{" "}
-                      <span style={{ fontWeight: 400, color: "#5C8A83", fontSize: 13 }}>
-                        (8oz)
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: "#5C8A83",
-                        fontFamily: "system-ui, -apple-system, sans-serif",
-                      }}
-                    >
-                      {f.note}
-                    </div>
-                  </div>
-                  <Stepper
-                    value={qty[f.id] || 0}
-                    onDecrease={() => changeQty(f.id, -1)}
-                    onIncrease={() => changeQty(f.id, 1)}
-                  />
-                </div>
+                  flavor={f}
+                  qty={qty}
+                  onChangeQty={changeQty}
+                />
               ))}
             </div>
 
@@ -312,9 +276,9 @@ export default function JamOrderForm() {
                 fontFamily: "system-ui, -apple-system, sans-serif",
               }}
             >
-              {FLAVORS.filter((f) => qty[f.id] > 0).map((f) => (
+              {lines.map((line) => (
                 <div
-                  key={f.id}
+                  key={line.key}
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -323,9 +287,9 @@ export default function JamOrderForm() {
                   }}
                 >
                   <span>
-                    {qty[f.id]} &times; {f.name} (8oz)
+                    {line.n} &times; {line.label}
                   </span>
-                  <span>{currency(qty[f.id] * PRICE_PER_JAR)}</span>
+                  <span>{currency(line.amount)}</span>
                 </div>
               ))}
               <div
@@ -435,10 +399,13 @@ export default function JamOrderForm() {
                 marginBottom: 8,
               }}
             >
-              <span>
-                {jarCount} jar{jarCount === 1 ? "" : "s"}
+              <span data-testid="order-item-count">
+                {itemCount} item{itemCount === 1 ? "" : "s"}
               </span>
-              <span style={{ fontWeight: 700, color: "#16302C" }}>
+              <span
+                data-testid="order-total"
+                style={{ fontWeight: 700, color: "#16302C" }}
+              >
                 {currency(total)}
               </span>
             </div>
@@ -462,6 +429,114 @@ export default function JamOrderForm() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function FlavorSection({ flavor, qty, onChangeQty }) {
+  const subtotal = flavorSubtotal(qty, flavor);
+
+  return (
+    <div
+      data-testid={`flavor-${flavor.id}`}
+      style={{
+        background: "#FFFFFF",
+        border: "1px solid #BFE3DD",
+        borderRadius: 16,
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          padding: "14px 16px 10px",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            {flavor.name}
+          </div>
+          <div
+            style={{
+              fontSize: 13,
+              color: "#5C8A83",
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            {flavor.note}
+          </div>
+        </div>
+        <div
+          data-testid={`flavor-${flavor.id}-subtotal`}
+          style={{
+            fontSize: 15,
+            fontWeight: 700,
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            color: subtotal > 0 ? "#0F766E" : "#5C8A83",
+            paddingTop: 2,
+          }}
+        >
+          {currency(subtotal)}
+        </div>
+      </div>
+      {flavor.products.map((product) => {
+        const n = getQty(qty, flavor.id, product.id);
+        const lineTotal = n * product.price;
+        const label = `${flavor.name} ${product.name}`;
+        return (
+          <div
+            key={product.id}
+            data-testid={`line-${flavor.id}-${product.id}`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "10px 16px",
+              borderTop: "1px solid #E6F7F4",
+              background: n > 0 ? "#F7FCFB" : "#FFFFFF",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {product.name}
+              </div>
+              <div
+                data-testid={`line-${flavor.id}-${product.id}-amount`}
+                style={{
+                  fontSize: 12,
+                  color: "#5C8A83",
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {n > 0
+                  ? `${currency(product.price)} each · ${currency(lineTotal)}`
+                  : `${currency(product.price)} each`}
+              </div>
+            </div>
+            <Stepper
+              label={label}
+              value={n}
+              testId={`qty-${flavor.id}-${product.id}`}
+              onDecrease={() => onChangeQty(flavor.id, product.id, -1)}
+              onIncrease={() => onChangeQty(flavor.id, product.id, 1)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -500,11 +575,12 @@ function Field({ label, children }) {
   );
 }
 
-function Stepper({ value, onDecrease, onIncrease }) {
+function Stepper({ value, onDecrease, onIncrease, label, testId }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
       <button
         type="button"
+        aria-label={`Decrease ${label}`}
         onClick={onDecrease}
         disabled={value === 0}
         style={{
@@ -522,6 +598,7 @@ function Stepper({ value, onDecrease, onIncrease }) {
         −
       </button>
       <span
+        data-testid={testId}
         style={{
           minWidth: 18,
           textAlign: "center",
@@ -534,6 +611,7 @@ function Stepper({ value, onDecrease, onIncrease }) {
       </span>
       <button
         type="button"
+        aria-label={`Increase ${label}`}
         onClick={onIncrease}
         style={{
           width: 32,
