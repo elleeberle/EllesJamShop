@@ -35,6 +35,11 @@ test("renders the order form", () => {
   expect(
     screen.getByRole("heading", { name: "Elle's Homemade Jams" })
   ).toBeInTheDocument();
+  const pickupDeadline = screen.getByText(
+    "Pickup orders close Thursday at 8:00 p.m."
+  );
+  expect(pickupDeadline.tagName).toBe("STRONG");
+  expect(pickupDeadline).toHaveStyle({ fontStyle: "italic" });
   expect(screen.getByText("Strawberry")).toBeInTheDocument();
   expect(screen.getByText("Blueberry")).toBeInTheDocument();
   expect(screen.getByTestId("order-item-count")).toHaveTextContent("0 items");

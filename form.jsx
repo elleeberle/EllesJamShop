@@ -156,6 +156,26 @@ export default function JamOrderForm() {
         </div>
 
         {step === "form" ? (
+          <>
+          <div
+            style={{
+              margin: "20px 20px 0",
+              padding: "16px 18px",
+              background: "#D4EDE8",
+              border: "1.5px solid #0F766E",
+              borderRadius: 16,
+              color: "#16302C",
+              fontSize: 14,
+              lineHeight: 1.5,
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            <strong style={{ fontStyle: "italic" }}>
+              Pickup orders close Thursday at 8:00 p.m.
+            </strong>{" "}
+            Unless otherwise arranged, pickups take place in Knoxville on
+            Saturdays.
+          </div>
           <div style={{ padding: "24px 20px 0" }}>
             {/* Flavors */}
             <SectionLabel>Pick your flavors</SectionLabel>
@@ -264,6 +284,7 @@ export default function JamOrderForm() {
               </p>
             )}
           </div>
+          </>
         ) : (
           <div style={{ padding: "24px 20px 0" }}>
             <SectionLabel>Order summary</SectionLabel>

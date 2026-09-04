@@ -71,6 +71,17 @@ exports[`matches the initial form snapshot 1`] = `
         </p>
       </div>
       <div
+        style="margin: 20px 20px 0px; padding: 16px 18px; background: rgb(212, 237, 232); border: 1.5px solid rgb(15, 118, 110); border-radius: 16px; color: rgb(22, 48, 44); font-size: 14px; line-height: 1.5; font-family: system-ui, -apple-system, sans-serif;"
+      >
+        <strong
+          style="font-style: italic;"
+        >
+          Pickup orders close Thursday at 8:00 p.m.
+        </strong>
+         
+        Unless otherwise arranged, pickups take place in Knoxville on Saturdays.
+      </div>
+      <div
         style="padding: 24px 20px 0px;"
       >
         <p
