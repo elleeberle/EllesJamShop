@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Jam order form",
   "scripts": {
-    "build": "esbuild form.jsx --bundle --outfile=dist/app.js --loader:.jsx=jsx"
+    "build": "esbuild app.jsx --bundle --outfile=dist/app.js --loader:.jsx=jsx"
   },
   "devDependencies": {
     "esbuild": "^0.19.0"
