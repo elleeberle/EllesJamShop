@@ -28,15 +28,11 @@ jobs:
     
     - name: Verify build output
       run: ls -la dist/
-    
-    - name: Commit and push dist
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add dist/
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Build distribution" && git push)
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '.'
 
   deploy:
     needs: build
