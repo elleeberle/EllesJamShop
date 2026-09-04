@@ -32,10 +32,17 @@ jobs:
     - name: Verify build output
       run: ls -la dist/
 
+    - name: Prepare Pages site
+      run: |
+        mkdir -p site/dist
+        cp index.html site/index.html
+        cp dist/app.js site/dist/app.js
+        ls -la site site/dist
+
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: '.'
+        path: site
 
   deploy:
     needs: build
