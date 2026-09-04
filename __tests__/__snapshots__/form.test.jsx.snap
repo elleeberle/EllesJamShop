@@ -1028,21 +1028,25 @@ exports[`matches the initial form snapshot 1`] = `
         style="max-width: 440px; margin: 0px auto;"
       >
         <div
-          style="display: flex; justify-content: space-between; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; color: rgb(63, 101, 96); margin-bottom: 8px;"
+          style="display: flex; flex-direction: column; gap: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; color: rgb(63, 101, 96); margin-bottom: 8px;"
         >
-          <span
-            data-testid="order-item-count"
+          <div
+            style="display: flex; justify-content: space-between;"
           >
-            0
-             item
-            s
-          </span>
-          <span
-            data-testid="order-total"
-            style="font-weight: 700; color: rgb(22, 48, 44);"
-          >
-            $0.00
-          </span>
+            <span
+              data-testid="order-item-count"
+            >
+              0
+               item
+              s
+            </span>
+            <span
+              data-testid="order-total"
+              style="font-weight: 700; color: rgb(22, 48, 44);"
+            >
+              $0.00
+            </span>
+          </div>
         </div>
         <button
           style="width: 100%; padding: 14px 0px; border-radius: 12px; background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 16px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif;"
@@ -1129,12 +1133,40 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
       <div
         style="padding: 24px 20px 0px;"
       >
+        <button
+          data-testid="edit-order"
+          style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 8px 14px; border-radius: 10px; border: 1.5px solid rgb(15, 118, 110); background: rgb(255, 255, 255); color: rgb(15, 118, 110); font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif; cursor: pointer;"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            fill="none"
+            height="14"
+            viewBox="0 0 16 16"
+            width="14"
+          >
+            <path
+              d="M11.13 2.13a1.5 1.5 0 0 1 2.12 2.12L5.5 12H3v-2.5l8.13-8.37Z"
+              stroke="currentColor"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+            />
+            <path
+              d="M9.75 3.5l2.75 2.75"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="1.5"
+            />
+          </svg>
+          Edit order
+        </button>
         <p
           style="font-size: 13px; color: rgb(92, 138, 131); margin: 0px 0px 10px 4px; font-family: system-ui, -apple-system, sans-serif;"
         >
           Order summary
         </p>
         <div
+          data-testid="order-summary-card"
           style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 18px; font-family: system-ui, -apple-system, sans-serif;"
         >
           <div
@@ -1155,7 +1187,9 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
             <span>
               Total
             </span>
-            <span>
+            <span
+              data-testid="summary-total"
+            >
               $9.00
             </span>
           </div>
@@ -1173,6 +1207,59 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
             </div>
           </div>
         </div>
+        <details
+          data-testid="payment-accordion"
+          style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 14px 18px 16px; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif;"
+        >
+          <summary
+            style="cursor: pointer; font-weight: 600; font-size: 15px; color: rgb(22, 48, 44);"
+          >
+            Payment
+          </summary>
+          <div
+            style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"
+          >
+            <label
+              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+            >
+              <input
+                name="payment-method"
+                type="radio"
+                value="venmo"
+              />
+              Venmo
+            </label>
+            <label
+              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+            >
+              <input
+                name="payment-method"
+                type="radio"
+                value="apple-pay"
+              />
+              Apple Pay
+            </label>
+            <label
+              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+            >
+              <input
+                name="payment-method"
+                type="radio"
+                value="cash-app"
+              />
+              Cash App
+            </label>
+          </div>
+        </details>
+        <script
+          aria-hidden="true"
+          data-testid="order-notification-payload"
+          hidden=""
+          id="order-notification-payload"
+          type="application/json"
+        >
+          {"name":"Ada Lovelace","phone":"555-0100","fulfillment":"pickup","address":"","zip":"","notes":"","paymentMethod":"","lines":[{"key":"strawberry-jam-8oz","label":"Strawberry 8oz jam","n":1,"amount":9}],"itemCount":1,"itemTotal":9,"shipping":{"cost":0,"estimatedBoxes":0,"zone":0},"total":9}
+        </script>
         <div
           style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;"
         >

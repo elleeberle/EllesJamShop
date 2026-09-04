@@ -2,7 +2,12 @@ import React from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import JamOrderForm from "../form.jsx";
-import { FLAVORS, currency } from "../order.js";
+import { FLAVORS, PAYMENT_METHODS, currency } from "../order.js";
+import { resetOrderStore } from "../orderStore.js";
+
+beforeEach(() => {
+  resetOrderStore();
+});
 
 function renderForm() {
   return render(<JamOrderForm />);
@@ -91,7 +96,161 @@ test("reviews a complete pickup order and matches the summary snapshot", async (
   expect(screen.getByText(/1 × Strawberry 8oz jam/)).toBeInTheDocument();
   expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Text this order" })).toBeInTheDocument();
+
+  const editOrder = screen.getByRole("button", { name: "Edit order" });
+  expect(editOrder.querySelector("svg")).toBeInTheDocument();
+  expect(editOrder).toHaveStyle({
+    border: "1.5px solid #0F766E",
+    background: "#FFFFFF",
+  });
   expect(container).toMatchSnapshot();
+});
+
+test("requires a ZIP code before reviewing a delivery order", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+
+  expect(screen.getByText("Enter a 5-digit ZIP code.")).toBeInTheDocument();
+});
+
+test("shows shipping after a delivery ZIP and hides boxes and zone", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByTestId("delivery-zip"), "60601");
+
+  expect(screen.getByTestId("order-item-count")).toHaveTextContent("3 items");
+  expect(screen.getByTestId("order-subtotal")).toHaveTextContent("$27.00");
+  expect(screen.getByTestId("order-shipping")).toHaveTextContent("$14.00");
+  expect(screen.getByTestId("order-total")).toHaveTextContent("$41.00");
+  expect(screen.queryByText(/zone/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/box/i)).not.toBeInTheDocument();
+});
+
+test("pickup does not show a shipping line", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+
+  expect(screen.queryByTestId("order-shipping")).not.toBeInTheDocument();
+  expect(screen.getByTestId("order-total")).toHaveTextContent("$9.00");
+});
+
+test("reviews a delivery order with hidden notification metadata", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
+  await user.type(screen.getByTestId("delivery-zip"), "60601");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+
+  expect(screen.getByText("Order summary")).toBeInTheDocument();
+  expect(screen.getByTestId("summary-shipping")).toHaveTextContent("$14.00");
+  expect(screen.getByTestId("summary-total")).toHaveTextContent("$41.00");
+
+  const summaryCard = screen.getByTestId("order-summary-card");
+  expect(summaryCard.textContent).not.toMatch(/estimatedBoxes/);
+  expect(summaryCard.textContent).not.toMatch(/\bzone\b/i);
+
+  const payloadNode = screen.getByTestId("order-notification-payload");
+  expect(payloadNode).not.toBeVisible();
+  const payload = JSON.parse(payloadNode.textContent);
+  expect(payload.shipping).toEqual({
+    cost: 14,
+    estimatedBoxes: 1,
+    zone: 5,
+  });
+
+  const smsHref = screen.getByRole("link", { name: "Text this order" }).getAttribute("href");
+  expect(decodeURIComponent(smsHref)).toContain("Shipping: $14.00");
+  expect(decodeURIComponent(smsHref)).not.toContain("estimatedBoxes");
+  expect(decodeURIComponent(smsHref)).not.toMatch(/zone/i);
+});
+
+const paymentMethodNames = PAYMENT_METHODS.map((method) => method.label);
+
+async function reviewPickupOrder(user) {
+  const strawberry = FLAVORS[0];
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+}
+
+test("review shows the same payment choices for pickup and delivery", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  const pickupAccordion = screen.getByTestId("payment-accordion");
+  expect(within(pickupAccordion).getByText("Payment")).toBeInTheDocument();
+  paymentMethodNames.forEach((label) => {
+    expect(within(pickupAccordion).getByRole("radio", { name: label })).toBeInTheDocument();
+  });
+
+  await user.click(screen.getByRole("button", { name: "Edit order" }));
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
+  await user.type(screen.getByTestId("delivery-zip"), "37919");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+
+  const deliveryAccordion = screen.getByTestId("payment-accordion");
+  paymentMethodNames.forEach((label) => {
+    expect(within(deliveryAccordion).getByRole("radio", { name: label })).toBeInTheDocument();
+  });
+});
+
+test("selecting a payment method updates the accordion and order text", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("radio", { name: "Venmo" }));
+
+  expect(screen.getByText("Payment · Venmo")).toBeInTheDocument();
+  const payload = JSON.parse(screen.getByTestId("order-notification-payload").textContent);
+  expect(payload.paymentMethod).toBe("venmo");
+  const smsHref = screen.getByRole("link", { name: "Text this order" }).getAttribute("href");
+  expect(decodeURIComponent(smsHref)).toContain("Payment: Venmo");
+});
+
+test("edit order returns to the form without clearing fields", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("radio", { name: "Cash App" }));
+  await user.click(screen.getByRole("button", { name: "Edit order" }));
+
+  expect(screen.getByRole("button", { name: "Review order" })).toBeInTheDocument();
+  expect(screen.getByPlaceholderText("Jane Doe")).toHaveValue("Ada Lovelace");
+  expect(screen.getByPlaceholderText("(555) 012-3456")).toHaveValue("555-0100");
+  expect(screen.getByTestId("qty-strawberry-jam-8oz")).toHaveTextContent("1");
+
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+  expect(screen.getByText("Payment · Cash App")).toBeInTheDocument();
 });
 
 describe("flavor subsection dollar amounts", () => {

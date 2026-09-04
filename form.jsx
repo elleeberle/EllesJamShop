@@ -1,36 +1,62 @@
 import React, { useState, useMemo } from "react";
+import { useStore } from "@tanstack/react-store";
 import {
   FLAVORS,
-  applyQtyChange,
+  PAYMENT_METHODS,
+  buildOrderNotification,
   currency,
   flavorSubtotal,
   getQty,
-  orderLines,
+  normalizeZip,
+  orderQuote,
+  paymentMethodLabel,
 } from "./order.js";
+import {
+  changeOrderQty,
+  orderStore,
+  patchOrder,
+  resetOrderStore,
+} from "./orderStore.js";
 
 export default function JamOrderForm() {
-  const [qty, setQty] = useState({});
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [fulfillment, setFulfillment] = useState("pickup");
-  const [address, setAddress] = useState("");
-  const [notes, setNotes] = useState("");
-  const [step, setStep] = useState("form");
+  const {
+    qty,
+    name,
+    phone,
+    fulfillment,
+    address,
+    zip,
+    notes,
+    step,
+    paymentMethod,
+  } = useStore(orderStore);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const lines = useMemo(() => orderLines(qty), [qty]);
-  const itemCount = useMemo(
-    () => lines.reduce((sum, line) => sum + line.n, 0),
-    [lines]
+  const quote = useMemo(
+    () => orderQuote({ qty, fulfillment, zip }),
+    [qty, fulfillment, zip]
   );
-  const total = useMemo(
-    () => lines.reduce((sum, line) => sum + line.amount, 0),
-    [lines]
+  const { lines, itemCount, itemTotal, shipping, total } = quote;
+  const showShipping = fulfillment === "delivery" && shipping.zone > 0;
+  const selectedPaymentLabel = paymentMethodLabel(paymentMethod);
+  const notification = useMemo(
+    () =>
+      buildOrderNotification({
+        qty,
+        name,
+        phone,
+        fulfillment,
+        address,
+        zip,
+        notes,
+        paymentMethod,
+      }),
+    [qty, name, phone, fulfillment, address, zip, notes, paymentMethod]
   );
 
   function changeQty(flavorId, productId, delta) {
-    setQty((prev) => applyQtyChange(prev, flavorId, productId, delta));
+    changeOrderQty(flavorId, productId, delta);
   }
 
   function buildSummary() {
@@ -39,13 +65,19 @@ export default function JamOrderForm() {
       ...lines.map(
         (line) => `${line.n} x ${line.label} — ${currency(line.amount)}`
       ),
+      showShipping ? `Subtotal: ${currency(itemTotal)}` : null,
+      showShipping ? `Shipping: ${currency(shipping.cost)}` : null,
       `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(total)}`,
       "",
       `Name: ${name}`,
       `Phone: ${phone}`,
       fulfillment === "pickup" ? "Fulfillment: Pickup" : "Fulfillment: Delivery",
       fulfillment === "delivery" && address ? `Address: ${address}` : null,
+      fulfillment === "delivery" && normalizeZip(zip)
+        ? `ZIP: ${normalizeZip(zip)}`
+        : null,
       notes ? `Notes: ${notes}` : null,
+      selectedPaymentLabel ? `Payment: ${selectedPaymentLabel}` : null,
     ]
       .filter(Boolean)
       .join("\n");
@@ -68,8 +100,17 @@ export default function JamOrderForm() {
       setError("Enter a delivery address.");
       return;
     }
+    if (fulfillment === "delivery" && !normalizeZip(zip)) {
+      setError("Enter a 5-digit ZIP code.");
+      return;
+    }
     setError("");
-    setStep("summary");
+    patchOrder({ step: "summary" });
+  }
+
+  function handleEditOrder() {
+    setError("");
+    patchOrder({ step: "form" });
   }
 
   function handleCopy() {
@@ -80,14 +121,9 @@ export default function JamOrderForm() {
   }
 
   function handleReset() {
-    setQty({});
-    setName("");
-    setPhone("");
-    setFulfillment("pickup");
-    setAddress("");
-    setNotes("");
+    resetOrderStore();
     setError("");
-    setStep("form");
+    setCopied(false);
   }
 
   const smsHref = `sms:?&body=${encodeURIComponent(buildSummary())}`;
@@ -207,7 +243,7 @@ export default function JamOrderForm() {
                 <input
                   style={inputStyle}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => patchOrder({ name: e.target.value })}
                   placeholder="Jane Doe"
                 />
               </Field>
@@ -215,7 +251,7 @@ export default function JamOrderForm() {
                 <input
                   style={inputStyle}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => patchOrder({ phone: e.target.value })}
                   placeholder="(555) 012-3456"
                   type="tel"
                 />
@@ -227,7 +263,12 @@ export default function JamOrderForm() {
                     <button
                       key={opt}
                       type="button"
-                      onClick={() => setFulfillment(opt)}
+                      onClick={() => {
+                        patchOrder({
+                          fulfillment: opt,
+                          ...(opt === "pickup" ? { zip: "" } : {}),
+                        });
+                      }}
                       style={{
                         flex: 1,
                         padding: "10px 0",
@@ -251,21 +292,34 @@ export default function JamOrderForm() {
               </Field>
 
               {fulfillment === "delivery" && (
+                <>
                 <Field label="Delivery address">
                   <input
                     style={inputStyle}
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={(e) => patchOrder({ address: e.target.value })}
                     placeholder="123 Orchard Lane"
                   />
                 </Field>
+                <Field label="ZIP code">
+                  <input
+                    style={inputStyle}
+                    value={zip}
+                    onChange={(e) => patchOrder({ zip: e.target.value })}
+                    placeholder="37919"
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    data-testid="delivery-zip"
+                  />
+                </Field>
+                </>
               )}
 
               <Field label="Notes (optional)">
                 <textarea
                   style={{ ...inputStyle, height: 64, resize: "none" }}
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={(e) => patchOrder({ notes: e.target.value })}
                   placeholder="Allergies, gift note, preferred pickup time..."
                 />
               </Field>
@@ -287,8 +341,32 @@ export default function JamOrderForm() {
           </>
         ) : (
           <div style={{ padding: "24px 20px 0" }}>
+            <button
+              type="button"
+              onClick={handleEditOrder}
+              data-testid="edit-order"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 12,
+                padding: "8px 14px",
+                borderRadius: 10,
+                border: "1.5px solid #0F766E",
+                background: "#FFFFFF",
+                color: "#0F766E",
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "system-ui, -apple-system, sans-serif",
+                cursor: "pointer",
+              }}
+            >
+              <EditIcon />
+              Edit order
+            </button>
             <SectionLabel>Order summary</SectionLabel>
             <div
+              data-testid="order-summary-card"
               style={{
                 background: "#FFFFFF",
                 border: "1px solid #BFE3DD",
@@ -313,6 +391,34 @@ export default function JamOrderForm() {
                   <span>{currency(line.amount)}</span>
                 </div>
               ))}
+              {showShipping && (
+                <>
+                  <div
+                    style={{
+                      borderTop: "1px solid #E6F7F4",
+                      marginTop: 8,
+                      paddingTop: 10,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: 15,
+                    }}
+                  >
+                    <span>Subtotal</span>
+                    <span data-testid="summary-subtotal">{currency(itemTotal)}</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "6px 0",
+                      fontSize: 15,
+                    }}
+                  >
+                    <span>Shipping</span>
+                    <span data-testid="summary-shipping">{currency(shipping.cost)}</span>
+                  </div>
+                </>
+              )}
               <div
                 style={{
                   borderTop: "1px solid #E6F7F4",
@@ -325,7 +431,7 @@ export default function JamOrderForm() {
                 }}
               >
                 <span>Total</span>
-                <span>{currency(total)}</span>
+                <span data-testid="summary-total">{currency(total)}</span>
               </div>
               <div
                 style={{
@@ -340,11 +446,31 @@ export default function JamOrderForm() {
                 <div>{name}</div>
                 <div>{phone}</div>
                 <div>
-                  {fulfillment === "pickup" ? "Pickup" : `Delivery — ${address}`}
+                  {fulfillment === "pickup"
+                    ? "Pickup"
+                    : `Delivery — ${address}${
+                        normalizeZip(zip) ? ` ${normalizeZip(zip)}` : ""
+                      }`}
                 </div>
                 {notes && <div>Note: {notes}</div>}
               </div>
             </div>
+
+            <PaymentAccordion
+              paymentMethod={paymentMethod}
+              onSelect={(id) => patchOrder({ paymentMethod: id })}
+            />
+
+            <script
+              id="order-notification-payload"
+              type="application/json"
+              data-testid="order-notification-payload"
+              hidden
+              aria-hidden="true"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(notification),
+              }}
+            />
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
               <a
@@ -413,22 +539,60 @@ export default function JamOrderForm() {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                gap: 4,
                 fontFamily: "system-ui, -apple-system, sans-serif",
                 fontSize: 14,
                 color: "#3F6560",
                 marginBottom: 8,
               }}
             >
-              <span data-testid="order-item-count">
-                {itemCount} item{itemCount === 1 ? "" : "s"}
-              </span>
-              <span
-                data-testid="order-total"
-                style={{ fontWeight: 700, color: "#16302C" }}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                {currency(total)}
-              </span>
+                <span data-testid="order-item-count">
+                  {itemCount} item{itemCount === 1 ? "" : "s"}
+                </span>
+                {showShipping ? (
+                  <span data-testid="order-subtotal">{currency(itemTotal)}</span>
+                ) : (
+                  <span
+                    data-testid="order-total"
+                    style={{ fontWeight: 700, color: "#16302C" }}
+                  >
+                    {currency(total)}
+                  </span>
+                )}
+              </div>
+              {showShipping && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span>Shipping</span>
+                    <span data-testid="order-shipping">
+                      {currency(shipping.cost)}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontWeight: 700,
+                      color: "#16302C",
+                    }}
+                  >
+                    <span>Total</span>
+                    <span data-testid="order-total">{currency(total)}</span>
+                  </div>
+                </>
+              )}
             </div>
             <button
               type="button"
@@ -451,6 +615,66 @@ export default function JamOrderForm() {
         </div>
       )}
     </div>
+  );
+}
+
+function PaymentAccordion({ paymentMethod, onSelect }) {
+  const selectedLabel = paymentMethodLabel(paymentMethod);
+
+  return (
+    <details
+      data-testid="payment-accordion"
+      style={{
+        background: "#FFFFFF",
+        border: "1px solid #BFE3DD",
+        borderRadius: 16,
+        padding: "14px 18px 16px",
+        marginTop: 12,
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      <summary
+        style={{
+          cursor: "pointer",
+          fontWeight: 600,
+          fontSize: 15,
+          color: "#16302C",
+        }}
+      >
+        {selectedLabel ? `Payment · ${selectedLabel}` : "Payment"}
+      </summary>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          marginTop: 14,
+        }}
+      >
+        {PAYMENT_METHODS.map((method) => (
+          <label
+            key={method.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              fontSize: 15,
+              color: "#16302C",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="radio"
+              name="payment-method"
+              value={method.id}
+              checked={paymentMethod === method.id}
+              onChange={() => onSelect(method.id)}
+            />
+            {method.label}
+          </label>
+        ))}
+      </div>
+    </details>
   );
 }
 
@@ -649,6 +873,31 @@ function Stepper({ value, onDecrease, onIncrease, label, testId }) {
         +
       </button>
     </div>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M11.13 2.13a1.5 1.5 0 0 1 2.12 2.12L5.5 12H3v-2.5l8.13-8.37Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.75 3.5l2.75 2.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
