@@ -1,62 +1,12 @@
 import React, { useState, useMemo } from "react";
-
-const JAM_PRODUCTS = [
-  { id: "jam-8oz", name: "8oz jam", price: 9 },
-  { id: "syrup-8oz", name: "8oz syrup", price: 8 },
-  { id: "syrup-4oz", name: "4oz syrup", price: 5 },
-];
-
-const BUTTER_PRODUCTS = [
-  { id: "butter-8oz", name: "8oz butter", price: 9 },
-  { id: "butter-12oz", name: "12oz butter", price: 12 },
-];
-
-const JELLY_PRODUCTS = [
-  { id: "jelly-8oz", name: "8oz jelly", price: 9 },
-  { id: "jelly-12oz", name: "12oz jelly", price: 12 },
-];
-
-const FLAVORS = [
-  { id: "strawberry", name: "Strawberry", note: "Classic and sweet", products: JAM_PRODUCTS },
-  { id: "blueberry", name: "Blueberry", note: "Bright and fruity", products: JAM_PRODUCTS },
-  { id: "apple-butter", name: "Apple butter", note: "Warm spice", products: BUTTER_PRODUCTS },
-  { id: "grape", name: "Grape", note: "Bold and jammy", products: JELLY_PRODUCTS },
-  { id: "raspberry", name: "Raspberry", note: "Tart and bright", products: JAM_PRODUCTS },
-  { id: "blackberry", name: "Blackberry", note: "Deep and rich", products: JAM_PRODUCTS },
-];
-
-function currency(n) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
-
-function getQty(qty, flavorId, productId) {
-  return qty[flavorId]?.[productId] || 0;
-}
-
-function flavorSubtotal(qty, flavor) {
-  return flavor.products.reduce(
-    (sum, p) => sum + getQty(qty, flavor.id, p.id) * p.price,
-    0
-  );
-}
-
-function orderLines(qty) {
-  const lines = [];
-  for (const flavor of FLAVORS) {
-    for (const product of flavor.products) {
-      const n = getQty(qty, flavor.id, product.id);
-      if (n > 0) {
-        lines.push({
-          key: `${flavor.id}-${product.id}`,
-          label: `${flavor.name} ${product.name}`,
-          n,
-          amount: n * product.price,
-        });
-      }
-    }
-  }
-  return lines;
-}
+import {
+  FLAVORS,
+  applyQtyChange,
+  currency,
+  flavorSubtotal,
+  getQty,
+  orderLines,
+} from "./order.js";
 
 export default function JamOrderForm() {
   const [qty, setQty] = useState({});
@@ -80,13 +30,7 @@ export default function JamOrderForm() {
   );
 
   function changeQty(flavorId, productId, delta) {
-    setQty((prev) => {
-      const next = Math.max(0, getQty(prev, flavorId, productId) + delta);
-      return {
-        ...prev,
-        [flavorId]: { ...prev[flavorId], [productId]: next },
-      };
-    });
+    setQty((prev) => applyQtyChange(prev, flavorId, productId, delta));
   }
 
   function buildSummary() {
@@ -455,10 +399,13 @@ export default function JamOrderForm() {
                 marginBottom: 8,
               }}
             >
-              <span>
+              <span data-testid="order-item-count">
                 {itemCount} item{itemCount === 1 ? "" : "s"}
               </span>
-              <span style={{ fontWeight: 700, color: "#16302C" }}>
+              <span
+                data-testid="order-total"
+                style={{ fontWeight: 700, color: "#16302C" }}
+              >
                 {currency(total)}
               </span>
             </div>
@@ -491,6 +438,7 @@ function FlavorSection({ flavor, qty, onChangeQty }) {
 
   return (
     <div
+      data-testid={`flavor-${flavor.id}`}
       style={{
         background: "#FFFFFF",
         border: "1px solid #BFE3DD",
@@ -527,6 +475,7 @@ function FlavorSection({ flavor, qty, onChangeQty }) {
           </div>
         </div>
         <div
+          data-testid={`flavor-${flavor.id}-subtotal`}
           style={{
             fontSize: 15,
             fontWeight: 700,
@@ -541,9 +490,11 @@ function FlavorSection({ flavor, qty, onChangeQty }) {
       {flavor.products.map((product) => {
         const n = getQty(qty, flavor.id, product.id);
         const lineTotal = n * product.price;
+        const label = `${flavor.name} ${product.name}`;
         return (
           <div
             key={product.id}
+            data-testid={`line-${flavor.id}-${product.id}`}
             style={{
               display: "flex",
               alignItems: "center",
@@ -564,6 +515,7 @@ function FlavorSection({ flavor, qty, onChangeQty }) {
                 {product.name}
               </div>
               <div
+                data-testid={`line-${flavor.id}-${product.id}-amount`}
                 style={{
                   fontSize: 12,
                   color: "#5C8A83",
@@ -576,7 +528,9 @@ function FlavorSection({ flavor, qty, onChangeQty }) {
               </div>
             </div>
             <Stepper
+              label={label}
               value={n}
+              testId={`qty-${flavor.id}-${product.id}`}
               onDecrease={() => onChangeQty(flavor.id, product.id, -1)}
               onIncrease={() => onChangeQty(flavor.id, product.id, 1)}
             />
@@ -621,11 +575,12 @@ function Field({ label, children }) {
   );
 }
 
-function Stepper({ value, onDecrease, onIncrease }) {
+function Stepper({ value, onDecrease, onIncrease, label, testId }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
       <button
         type="button"
+        aria-label={`Decrease ${label}`}
         onClick={onDecrease}
         disabled={value === 0}
         style={{
@@ -643,6 +598,7 @@ function Stepper({ value, onDecrease, onIncrease }) {
         −
       </button>
       <span
+        data-testid={testId}
         style={{
           minWidth: 18,
           textAlign: "center",
@@ -655,6 +611,7 @@ function Stepper({ value, onDecrease, onIncrease }) {
       </span>
       <button
         type="button"
+        aria-label={`Increase ${label}`}
         onClick={onIncrease}
         style={{
           width: 32,
