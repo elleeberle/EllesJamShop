@@ -1,5 +1,5 @@
 {
-	"name": "elles-jam-shop",
+	"name": "ellesjamshop",
 	// Workers Static Assets (not Pages). See https://developers.cloudflare.com/workers/static-assets/
 	"compatibility_date": "2026-09-05",
 	"workers_dev": true,

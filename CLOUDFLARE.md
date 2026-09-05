@@ -4,19 +4,20 @@ The shop deploys as a [Workers Static Assets](https://developers.cloudflare.com/
 
 Pull requests still run tests and a production build; only pushes to `main` publish.
 
-Live URL after the first deploy: `https://elles-jam-shop.<your-subdomain>.workers.dev` (confirm the exact subdomain in **Workers & Pages** in the Cloudflare dashboard).
+Live URL: [https://ellesjamshop.j5h5vzjw48.workers.dev](https://ellesjamshop.j5h5vzjw48.workers.dev).
 
 ## One-time setup
 
 1. Create a free [Cloudflare account](https://dash.cloudflare.com/sign-up).
-2. Enable a `workers.dev` subdomain: **Workers & Pages → Overview → Your workers.dev subdomain**. You do not need to create a Pages project; `wrangler deploy` creates the Worker named `elles-jam-shop`.
+2. Enable a `workers.dev` subdomain: **Workers & Pages → Overview → Your workers.dev subdomain**. This account uses `j5h5vzjw48`. You do not need to create a Pages project; `wrangler deploy` publishes to the Worker named `ellesjamshop`.
 3. Create an API token from the **Edit Cloudflare Workers** template ([token docs](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)). That includes **Account → Workers Scripts → Edit**. Do not use a Pages-only token.
-4. In this GitHub repo, add Actions secrets:
+4. In this GitHub repo, create a **deploy** environment (**Settings → Environments**) and add environment secrets:
    - `CLOUDFLARE_API_TOKEN` — the token from step 3
    - `CLOUDFLARE_ACCOUNT_ID` — from the Cloudflare dashboard overview (right sidebar)
+   The workflow’s deploy job uses `environment: deploy`, so these must be environment secrets, not only repository secrets.
 5. Push to `main` (or re-run the **Build and Deploy** workflow) and confirm the Worker shows a successful deployment.
 
-If you already created a **Pages** project named `elles-jam-shop` from earlier instructions, delete it after the Worker is live so the name does not collide and you are not serving an extra copy.
+If you already created a **Pages** project from earlier instructions, delete it after the Worker is live so you are not serving an extra copy.
 
 ## Bot mitigation (dashboard)
 

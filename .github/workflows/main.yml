@@ -40,8 +40,30 @@ jobs:
         cp -r dist/* site/dist
         ls -la site site/dist
 
+    - name: Upload Worker assets
+      uses: actions/upload-artifact@v4
+      with:
+        name: site
+        path: site
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: deploy
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download Worker assets
+      uses: actions/download-artifact@v4
+      with:
+        name: site
+        path: site
+
     - name: Deploy to Cloudflare Workers
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: cloudflare/wrangler-action@v3
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
