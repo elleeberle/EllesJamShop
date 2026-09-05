@@ -31,6 +31,7 @@ import {
   smallBoxRate,
   venmoNote,
   zoneFromZip,
+  orderSummaryText,
 } from "../order.js";
 import { setZipIndexForTests } from "../zipIndex.js";
 import { TEST_ZIPS } from "./testZips.js";
@@ -440,6 +441,50 @@ describe("orderQuote and buildOrderNotification", () => {
     expect(payload.fulfillment).toBe("pickup");
     expect(payload.name).toBe("Ada");
     expect(payload.notes).toBe("Leave at door");
+  });
+
+  test("orderSummaryText includes shipping cost and payment without boxes or zone", () => {
+    const payload = buildOrderNotification({
+      qty,
+      name: "Ada Lovelace",
+      phone: "5550123456",
+      fulfillment: "delivery",
+      address: "123 Orchard Lane",
+      zip: "60601",
+      notes: "Leave at door",
+      paymentMethod: "venmo",
+    });
+    const text = orderSummaryText(payload);
+    expect(text).toContain("Jam order");
+    expect(text).toContain("3 x Strawberry 8oz jam — $27.00");
+    expect(text).toContain("Subtotal: $27.00");
+    expect(text).toContain("Shipping: $14.00");
+    expect(text).toContain("Total (3 items): $41.00");
+    expect(text).toContain("Name: Ada Lovelace");
+    expect(text).toContain("Phone: (555) 012-3456");
+    expect(text).toContain("Fulfillment: Delivery");
+    expect(text).toContain("Address: 123 Orchard Lane");
+    expect(text).toContain("ZIP: 60601");
+    expect(text).toContain("Notes: Leave at door");
+    expect(text).toContain("Payment: Venmo");
+    expect(text).not.toContain("estimatedBoxes");
+    expect(text).not.toMatch(/zone/i);
+  });
+
+  test("orderSummaryText omits shipping lines for pickup", () => {
+    const payload = buildOrderNotification({
+      qty: { strawberry: { "jam-8oz": 1 } },
+      name: "Ada",
+      phone: "5550123456",
+      fulfillment: "pickup",
+    });
+    const text = orderSummaryText(payload);
+    expect(text).toContain("1 x Strawberry 8oz jam — $9.00");
+    expect(text).toContain("Total (1 item): $9.00");
+    expect(text).toContain("Fulfillment: Pickup");
+    expect(text).not.toContain("Subtotal:");
+    expect(text).not.toContain("Shipping:");
+    expect(text).not.toContain("Payment:");
   });
 });
 

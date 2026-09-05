@@ -415,3 +415,37 @@ export function buildOrderNotification({
     total: quote.total,
   };
 }
+
+export function orderSummaryText(notification) {
+  const payload = notification ?? {};
+  const lines = Array.isArray(payload.lines) ? payload.lines : [];
+  const itemCount = clampNonNegative(payload.itemCount);
+  const showShipping =
+    payload.fulfillment === "delivery" && payload.shipping?.zone > 0;
+  const paymentLabel = paymentMethodLabel(payload.paymentMethod);
+
+  return [
+    "Jam order",
+    ...lines.map(
+      (line) => `${line.n} x ${line.label} — ${currency(line.amount)}`
+    ),
+    showShipping ? `Subtotal: ${currency(payload.itemTotal)}` : null,
+    showShipping ? `Shipping: ${currency(payload.shipping?.cost)}` : null,
+    `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(payload.total)}`,
+    `Name: ${payload.name ?? ""}`,
+    `Phone: ${payload.phone ?? ""}`,
+    payload.fulfillment === "pickup"
+      ? "Fulfillment: Pickup"
+      : "Fulfillment: Delivery",
+    payload.fulfillment === "delivery" && payload.address
+      ? `Address: ${payload.address}`
+      : null,
+    payload.fulfillment === "delivery" && payload.zip
+      ? `ZIP: ${payload.zip}`
+      : null,
+    payload.notes ? `Notes: ${payload.notes}` : null,
+    paymentLabel ? `Payment: ${paymentLabel}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}

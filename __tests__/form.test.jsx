@@ -7,9 +7,54 @@ import { patchOrder, resetOrderStore } from "../orderStore.js";
 import { setZipIndexForTests } from "../zipIndex.js";
 import { TEST_ZIPS } from "./testZips.js";
 
+const mockSubmitFormspree = jest.fn();
+const mockResetFormspree = jest.fn();
+
+jest.mock("react-google-recaptcha-v3", () => ({
+  GoogleReCaptchaProvider: ({ children }) => children,
+  useGoogleReCaptcha: () => ({
+    executeRecaptcha: jest.fn().mockResolvedValue("recaptcha-token"),
+  }),
+}));
+
+jest.mock("@formspree/react", () => {
+  const React = require("react");
+  return {
+    useForm: () => {
+      const [state, setState] = React.useState({
+        submitting: false,
+        succeeded: false,
+        errors: null,
+      });
+      const submit = async (payload) => {
+        mockSubmitFormspree(payload);
+        if (global.__formspreeOutcome === "error") {
+          setState({
+            submitting: false,
+            succeeded: false,
+            errors: { form: true },
+          });
+          return;
+        }
+        setState({ submitting: false, succeeded: true, errors: null });
+      };
+      const reset = () => {
+        mockResetFormspree();
+        setState({ submitting: false, succeeded: false, errors: null });
+      };
+      return [state, submit, reset];
+    },
+    ValidationError: ({ errors }) =>
+      errors ? <p>Unable to submit order.</p> : null,
+  };
+});
+
 beforeEach(() => {
   resetOrderStore();
   setZipIndexForTests(TEST_ZIPS);
+  mockSubmitFormspree.mockClear();
+  mockResetFormspree.mockClear();
+  global.__formspreeOutcome = "success";
 });
 
 const strawberry = FLAVORS.find((f) => f.id === "strawberry");
@@ -110,7 +155,12 @@ test("reviews a complete pickup order and matches the summary snapshot", async (
   expect(screen.getByText("Order summary")).toBeInTheDocument();
   expect(screen.getByText(/1 × Strawberry 8oz jam/)).toBeInTheDocument();
   expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Text this order" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Submit order" })).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "Text this order" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "Email this order" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Copy order details" })
+  ).not.toBeInTheDocument();
 
   const editOrder = screen.getByRole("button", { name: "Edit order" });
   expect(editOrder.querySelector("svg")).toBeInTheDocument();
@@ -281,10 +331,13 @@ test("reviews a delivery order with hidden notification metadata", async () => {
     zone: 5,
   });
 
-  const smsHref = screen.getByRole("link", { name: "Text this order" }).getAttribute("href");
-  expect(decodeURIComponent(smsHref)).toContain("Shipping: $14.00");
-  expect(decodeURIComponent(smsHref)).not.toContain("estimatedBoxes");
-  expect(decodeURIComponent(smsHref)).not.toMatch(/zone/i);
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+  expect(mockSubmitFormspree).toHaveBeenCalled();
+  const submitted = mockSubmitFormspree.mock.calls[0][0];
+  expect(submitted.message).toContain("Shipping: $14.00");
+  expect(submitted.message).not.toContain("estimatedBoxes");
+  expect(submitted.message).not.toMatch(/zone/i);
+  expect(submitted.shippingCost).toBe(14);
 });
 
 const paymentMethodNames = PAYMENT_METHODS.map((method) => method.label);
@@ -395,7 +448,7 @@ test("switching to delivery clears a selected Apple Pay method", async () => {
   expect(screen.getByRole("radio", { name: "Apple Pay" })).not.toBeChecked();
 });
 
-test("delivery send actions reject Apple Pay even if it is forced on", async () => {
+test("delivery submit rejects Apple Pay even if it is forced on", async () => {
   const user = userEvent.setup();
   renderForm();
   await reviewPickupOrder(user);
@@ -404,37 +457,11 @@ test("delivery send actions reject Apple Pay even if it is forced on", async () 
     patchOrder({ paymentMethod: "apple-pay" });
   });
 
-  const sms = screen.getByRole("link", { name: "Text this order" });
-  const email = screen.getByRole("link", { name: "Email this order" });
-  expect(sms).toHaveAttribute("href", "#");
-  expect(email).toHaveAttribute("href", "#");
-
-  await user.click(sms);
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+  expect(mockSubmitFormspree).not.toHaveBeenCalled();
   expect(
     screen.getByText("Apple Pay is only available for pickup orders.")
   ).toBeInTheDocument();
-
-  await user.click(email);
-  expect(
-    screen.getByText("Apple Pay is only available for pickup orders.")
-  ).toBeInTheDocument();
-
-  const writeText = jest.fn();
-  const clipboardDesc = Object.getOwnPropertyDescriptor(navigator, "clipboard");
-  Object.defineProperty(navigator, "clipboard", {
-    configurable: true,
-    value: { writeText },
-  });
-  try {
-    await user.click(screen.getByRole("button", { name: "Copy order details" }));
-    expect(writeText).not.toHaveBeenCalled();
-  } finally {
-    if (clipboardDesc) {
-      Object.defineProperty(navigator, "clipboard", clipboardDesc);
-    } else {
-      delete navigator.clipboard;
-    }
-  }
 });
 
 test("hostile notes are sanitized on the review card and payload", async () => {
@@ -463,8 +490,62 @@ test("selecting a payment method updates the accordion and order text", async ()
   expect(screen.getByText("Payment · Venmo")).toBeInTheDocument();
   const payload = JSON.parse(screen.getByTestId("order-notification-payload").textContent);
   expect(payload.paymentMethod).toBe("venmo");
-  const smsHref = screen.getByRole("link", { name: "Text this order" }).getAttribute("href");
-  expect(decodeURIComponent(smsHref)).toContain("Payment: Venmo");
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+  expect(mockSubmitFormspree.mock.calls[0][0].message).toContain("Payment: Venmo");
+  expect(mockSubmitFormspree.mock.calls[0][0].paymentMethod).toBe("venmo");
+});
+
+test("successful submit shows confirmation and print invoice", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+
+  expect(await screen.findByTestId("order-sent-note")).toHaveTextContent(
+    "Order sent"
+  );
+  expect(screen.getByRole("button", { name: "Print invoice" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Edit order" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Submit order" })).not.toBeInTheDocument();
+
+  const print = jest.fn();
+  const originalPrint = window.print;
+  window.print = print;
+  try {
+    await user.click(screen.getByRole("button", { name: "Print invoice" }));
+    expect(print).toHaveBeenCalled();
+  } finally {
+    window.print = originalPrint;
+  }
+});
+
+test("Formspree errors stay on the summary", async () => {
+  const user = userEvent.setup();
+  global.__formspreeOutcome = "error";
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+
+  expect(await screen.findByText("Unable to submit order.")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Submit order" })).toBeInTheDocument();
+  expect(screen.queryByTestId("order-sent-note")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Edit order" })).toBeInTheDocument();
+});
+
+test("start a new order resets Formspree and the form", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+  await user.click(screen.getByRole("button", { name: "Submit order" }));
+  expect(await screen.findByTestId("order-sent-note")).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Start a new order" }));
+
+  expect(mockResetFormspree).toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "Review order" })).toBeInTheDocument();
+  expect(screen.getByPlaceholderText("Jane Doe")).toHaveValue("");
 });
 
 test("edit order returns to the form without clearing fields", async () => {

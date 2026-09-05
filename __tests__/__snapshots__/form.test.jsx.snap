@@ -5,10 +5,17 @@ exports[`matches the initial form snapshot 1`] = `
   <div
     style="font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; background: rgb(240, 251, 249); min-height: 100vh; color: rgb(22, 48, 44);"
   >
+    <style>
+      @media print {
+          .no-print { display: none !important; }
+          body { background: #fff; }
+        }
+    </style>
     <div
       style="max-width: 440px; margin: 0px auto; padding-bottom: 120px;"
     >
       <div
+        class="no-print"
         style="background: rgb(15, 118, 110); padding: 28px 24px 32px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;"
       >
         <div
@@ -1068,10 +1075,17 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
   <div
     style="font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; background: rgb(240, 251, 249); min-height: 100vh; color: rgb(22, 48, 44);"
   >
+    <style>
+      @media print {
+          .no-print { display: none !important; }
+          body { background: #fff; }
+        }
+    </style>
     <div
       style="max-width: 440px; margin: 0px auto; padding-bottom: 120px;"
     >
       <div
+        class="no-print"
         style="background: rgb(15, 118, 110); padding: 28px 24px 32px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;"
       >
         <div
@@ -1137,6 +1151,7 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
         style="padding: 24px 20px 0px;"
       >
         <button
+          class="no-print"
           data-testid="edit-order"
           style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 8px 14px; border-radius: 10px; border: 1.5px solid rgb(15, 118, 110); background: rgb(255, 255, 255); color: rgb(15, 118, 110); font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif; cursor: pointer;"
           type="button"
@@ -1210,68 +1225,72 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
             </div>
           </div>
         </div>
-        <details
-          data-testid="payment-accordion"
-          style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 14px 18px 16px; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif;"
+        <div
+          class="no-print"
         >
-          <summary
-            style="cursor: pointer; font-weight: 600; font-size: 15px; color: rgb(22, 48, 44);"
+          <details
+            data-testid="payment-accordion"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; padding: 14px 18px 16px; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif;"
           >
-            Payment
-          </summary>
-          <div
-            style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;"
-          >
-            <div>
-              <div
-                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
-              >
-                <label
-                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+            <summary
+              style="cursor: pointer; font-weight: 600; font-size: 15px; color: rgb(22, 48, 44);"
+            >
+              Payment
+            </summary>
+            <div
+              style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;"
+            >
+              <div>
+                <div
+                  style="display: flex; align-items: center; gap: 10px; opacity: 1;"
                 >
-                  <input
-                    name="payment-method"
-                    type="radio"
-                    value="apple-pay"
-                  />
-                  Apple Pay
-                </label>
+                  <label
+                    style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                  >
+                    <input
+                      name="payment-method"
+                      type="radio"
+                      value="apple-pay"
+                    />
+                    Apple Pay
+                  </label>
+                </div>
+              </div>
+              <div>
+                <div
+                  style="display: flex; align-items: center; gap: 10px; opacity: 1;"
+                >
+                  <label
+                    style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                  >
+                    <input
+                      name="payment-method"
+                      type="radio"
+                      value="cash-app"
+                    />
+                    Cash App
+                  </label>
+                </div>
+              </div>
+              <div>
+                <div
+                  style="display: flex; align-items: center; gap: 10px; opacity: 1;"
+                >
+                  <label
+                    style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                  >
+                    <input
+                      name="payment-method"
+                      type="radio"
+                      value="venmo"
+                    />
+                    Venmo
+                  </label>
+                </div>
               </div>
             </div>
-            <div>
-              <div
-                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
-              >
-                <label
-                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
-                >
-                  <input
-                    name="payment-method"
-                    type="radio"
-                    value="cash-app"
-                  />
-                  Cash App
-                </label>
-              </div>
-            </div>
-            <div>
-              <div
-                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
-              >
-                <label
-                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
-                >
-                  <input
-                    name="payment-method"
-                    type="radio"
-                    value="venmo"
-                  />
-                  Venmo
-                </label>
-              </div>
-            </div>
-          </div>
-        </details>
+          </details>
+        </div>
         <script
           aria-hidden="true"
           data-testid="order-notification-payload"
@@ -1281,26 +1300,23 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
         >
           {"name":"Ada Lovelace","phone":"(555) 012-3456","fulfillment":"pickup","address":"","zip":"","notes":"","paymentMethod":"","lines":[{"key":"strawberry-jam-8oz","label":"Strawberry 8oz jam","n":1,"amount":9}],"itemCount":1,"itemTotal":9,"shipping":{"cost":0,"estimatedBoxes":0,"zone":0},"total":9}
         </script>
-        <div
+        <form
+          class="no-print"
           style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;"
         >
-          <a
-            href="sms:?&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20(555)%20012-3456%0AFulfillment%3A%20Pickup"
-            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(15, 118, 110); color: rgb(240, 251, 249);"
-          >
-            Text this order
-          </a>
-          <a
-            href="mailto:?subject=Jam%20order%20from%20Ada%20Lovelace&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20(555)%20012-3456%0AFulfillment%3A%20Pickup"
-            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(255, 255, 255); color: rgb(15, 118, 110); border: 1.5px solid rgb(15, 118, 110);"
-          >
-            Email this order
-          </a>
+          <input
+            aria-hidden="true"
+            autocomplete="off"
+            name="_gotcha"
+            style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;"
+            tabindex="-1"
+            type="text"
+          />
           <button
-            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(255, 255, 255); color: rgb(63, 101, 96); border: 1px solid rgb(191, 227, 221);"
-            type="button"
+            style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(15, 118, 110); color: rgb(240, 251, 249);"
+            type="submit"
           >
-            Copy order details
+            Submit order
           </button>
           <button
             style="background: none; color: rgb(92, 138, 131); font-size: 14px; padding: 8px 0px; font-family: system-ui, -apple-system, sans-serif;"
@@ -1308,7 +1324,7 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
           >
             Start a new order
           </button>
-        </div>
+        </form>
       </div>
     </div>
   </div>

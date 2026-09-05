@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { useStore } from "@tanstack/react-store";
+import { useForm, ValidationError } from "@formspree/react";
 import { QRCodeSVG } from "qrcode.react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import {
   ADDRESS_MAX_LENGTH,
   FLAVORS,
@@ -17,6 +19,7 @@ import {
   normalizePhone,
   normalizeZip,
   orderQuote,
+  orderSummaryText,
   paymentLink,
   paymentMethodLabel,
   paymentSubmitError,
@@ -29,6 +32,7 @@ import {
   patchOrder,
   resetOrderStore,
 } from "./orderStore.js";
+import { FORMSPREE_FORM_ID } from "./formspree.js";
 import { ensureZipIndex } from "./zipCache.js";
 
 export default function JamOrderForm() {
@@ -44,13 +48,24 @@ export default function JamOrderForm() {
     paymentMethod,
   } = useStore(orderStore);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
   const phoneInputRef = useRef(null);
   const phoneCaretRef = useRef(null);
+  const { executeRecaptcha } = useGoogleReCaptcha();
+  const [formspree, submitFormspree, resetFormspree] = useForm(
+    FORMSPREE_FORM_ID,
+    { data: { "g-recaptcha-response": executeRecaptcha } }
+  );
+  const submitted = step === "submitted" || formspree.succeeded;
 
   useEffect(() => {
     ensureZipIndex();
   }, []);
+
+  useEffect(() => {
+    if (formspree.succeeded && step !== "submitted") {
+      patchOrder({ step: "submitted" });
+    }
+  }, [formspree.succeeded, step]);
 
   useLayoutEffect(() => {
     const input = phoneInputRef.current;
@@ -67,11 +82,9 @@ export default function JamOrderForm() {
   );
   const { lines, itemCount, itemTotal, shipping, total } = quote;
   const showShipping = fulfillment === "delivery" && shipping.zone > 0;
-  const selectedPaymentLabel = paymentMethodLabel(paymentMethod);
   const safeName = sanitizeOrderText(name, NAME_MAX_LENGTH);
   const safeAddress = sanitizeOrderText(address, ADDRESS_MAX_LENGTH);
   const safeNotes = sanitizeOrderText(notes, NOTES_MAX_LENGTH);
-  const submitError = paymentSubmitError(paymentMethod, fulfillment);
   const notification = useMemo(
     () =>
       buildOrderNotification({
@@ -89,30 +102,6 @@ export default function JamOrderForm() {
 
   function changeQty(flavorId, productId, delta) {
     changeOrderQty(flavorId, productId, delta);
-  }
-
-  function buildSummary() {
-    return [
-      "Jam order",
-      ...lines.map(
-        (line) => `${line.n} x ${line.label} — ${currency(line.amount)}`
-      ),
-      showShipping ? `Subtotal: ${currency(itemTotal)}` : null,
-      showShipping ? `Shipping: ${currency(shipping.cost)}` : null,
-      `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(total)}`,
-      "",
-      `Name: ${safeName}`,
-      `Phone: ${formatPhone(phone) || phone}`,
-      fulfillment === "pickup" ? "Fulfillment: Pickup" : "Fulfillment: Delivery",
-      fulfillment === "delivery" && safeAddress ? `Address: ${safeAddress}` : null,
-      fulfillment === "delivery" && normalizeZip(zip)
-        ? `ZIP: ${normalizeZip(zip)}`
-        : null,
-      safeNotes ? `Notes: ${safeNotes}` : null,
-      selectedPaymentLabel ? `Payment: ${selectedPaymentLabel}` : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
   }
 
   function handleReview() {
@@ -157,14 +146,6 @@ export default function JamOrderForm() {
     patchOrder({ step: "form" });
   }
 
-  function handleCopy() {
-    if (guardOutbound()) return;
-    navigator.clipboard?.writeText(buildSummary()).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
   function guardOutbound() {
     const message = paymentSubmitError(paymentMethod, fulfillment);
     if (message) {
@@ -175,26 +156,40 @@ export default function JamOrderForm() {
     return false;
   }
 
-  function handleOutboundClick(e) {
-    if (guardOutbound()) {
-      e.preventDefault();
-    }
+  function handleOrderSubmit(e) {
+    e.preventDefault();
+    if (guardOutbound()) return;
+    const gotcha = e.target.elements._gotcha?.value ?? "";
+    return submitFormspree({
+      _subject: `Jam order from ${notification.name}`,
+      message: orderSummaryText(notification),
+      name: notification.name,
+      phone: notification.phone,
+      fulfillment: notification.fulfillment,
+      address: notification.address,
+      zip: notification.zip,
+      notes: notification.notes,
+      paymentMethod: notification.paymentMethod,
+      itemCount: notification.itemCount,
+      itemTotal: notification.itemTotal,
+      shippingCost: notification.shipping.cost,
+      total: notification.total,
+      lines: notification.lines
+        .map((line) => `${line.n} x ${line.label} — ${currency(line.amount)}`)
+        .join("\n"),
+      _gotcha: gotcha,
+    });
+  }
+
+  function handlePrint() {
+    window.print();
   }
 
   function handleReset() {
+    resetFormspree();
     resetOrderStore();
     setError("");
-    setCopied(false);
   }
-
-  const smsHref = submitError
-    ? "#"
-    : `sms:?&body=${encodeURIComponent(buildSummary())}`;
-  const mailHref = submitError
-    ? "#"
-    : `mailto:?subject=${encodeURIComponent(
-        `Jam order from ${safeName}`
-      )}&body=${encodeURIComponent(buildSummary())}`;
 
   return (
     <div
@@ -206,9 +201,16 @@ export default function JamOrderForm() {
         color: "#16302C",
       }}
     >
+      <style>
+        {`@media print {
+          .no-print { display: none !important; }
+          body { background: #fff; }
+        }`}
+      </style>
       <div style={{ maxWidth: 440, margin: "0 auto", paddingBottom: 120 }}>
         {/* Header */}
         <div
+          className="no-print"
           style={{
             background: "#0F766E",
             padding: "28px 24px 32px",
@@ -420,10 +422,12 @@ export default function JamOrderForm() {
           </>
         ) : (
           <div style={{ padding: "24px 20px 0" }}>
+            {!submitted && (
             <button
               type="button"
               onClick={handleEditOrder}
               data-testid="edit-order"
+              className="no-print"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -443,6 +447,21 @@ export default function JamOrderForm() {
               <EditIcon />
               Edit order
             </button>
+            )}
+            {submitted && (
+              <p
+                data-testid="order-sent-note"
+                style={{
+                  margin: "0 0 12px",
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: "#0F766E",
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}
+              >
+                Order sent
+              </p>
+            )}
             <SectionLabel>Order summary</SectionLabel>
             <div
               data-testid="order-summary-card"
@@ -535,6 +554,7 @@ export default function JamOrderForm() {
               </div>
             </div>
 
+            <div className="no-print">
             <PaymentAccordion
               paymentMethod={paymentMethod}
               fulfillment={fulfillment}
@@ -542,12 +562,15 @@ export default function JamOrderForm() {
               notes={notes}
               onSelect={(id) => {
                 if (!isPaymentMethodAllowed(id, fulfillment)) return;
+                if (submitted) return;
                 patchOrder({ paymentMethod: id });
               }}
             />
+            </div>
 
             {error && (
               <p
+                className="no-print"
                 style={{
                   color: "#B45309",
                   fontSize: 14,
@@ -558,6 +581,17 @@ export default function JamOrderForm() {
                 {error}
               </p>
             )}
+            <ValidationError
+              className="no-print"
+              errors={formspree.errors}
+              style={{
+                color: "#B45309",
+                fontSize: 14,
+                marginTop: 12,
+                fontFamily: "system-ui, -apple-system, sans-serif",
+                display: "block",
+              }}
+            />
 
             <script
               id="order-notification-payload"
@@ -570,38 +604,43 @@ export default function JamOrderForm() {
               }}
             />
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
-              <a
-                href={smsHref}
-                onClick={handleOutboundClick}
-                style={{ ...ctaStyle, background: "#0F766E", color: "#F0FBF9" }}
-              >
-                Text this order
-              </a>
-              <a
-                href={mailHref}
-                onClick={handleOutboundClick}
+            <form
+              className="no-print"
+              onSubmit={handleOrderSubmit}
+              style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}
+            >
+              <input
+                type="text"
+                name="_gotcha"
+                tabIndex={-1}
+                autoComplete="off"
                 style={{
-                  ...ctaStyle,
-                  background: "#FFFFFF",
-                  color: "#0F766E",
-                  border: "1.5px solid #0F766E",
+                  position: "absolute",
+                  left: "-10000px",
+                  width: 1,
+                  height: 1,
+                  overflow: "hidden",
                 }}
-              >
-                Email this order
-              </a>
-              <button
-                type="button"
-                onClick={handleCopy}
-                style={{
-                  ...ctaStyle,
-                  background: "#FFFFFF",
-                  color: "#3F6560",
-                  border: "1px solid #BFE3DD",
-                }}
-              >
-                {copied ? "Copied!" : "Copy order details"}
-              </button>
+                aria-hidden="true"
+              />
+              {!submitted && (
+                <button
+                  type="submit"
+                  disabled={formspree.submitting}
+                  style={{ ...ctaStyle, background: "#0F766E", color: "#F0FBF9" }}
+                >
+                  {formspree.submitting ? "Sending…" : "Submit order"}
+                </button>
+              )}
+              {submitted && (
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  style={{ ...ctaStyle, background: "#0F766E", color: "#F0FBF9" }}
+                >
+                  Print invoice
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleReset}
@@ -616,7 +655,7 @@ export default function JamOrderForm() {
               >
                 Start a new order
               </button>
-            </div>
+            </form>
           </div>
         )}
       </div>
