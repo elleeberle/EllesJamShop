@@ -6,7 +6,8 @@
     "build": "esbuild app.jsx --bundle --splitting --format=esm --outdir=dist --loader:.jsx=jsx",
     "dev": "esbuild app.jsx --bundle --splitting --format=esm --outdir=dist --loader:.jsx=jsx --servedir=. --watch=forever --serve=3000 --banner:js=\"new EventSource('/esbuild').addEventListener('change', () => location.reload());\"",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
@@ -19,7 +20,8 @@
     "esbuild": "^0.19.0",
     "fake-indexeddb": "^6.2.5",
     "jest": "^30.5.1",
-    "jest-environment-jsdom": "^30.5.1"
+    "jest-environment-jsdom": "^30.5.1",
+    "wrangler": "^4.0.0"
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.2",
