@@ -4,9 +4,12 @@ import userEvent from "@testing-library/user-event";
 import JamOrderForm from "../form.jsx";
 import { FLAVORS, PAYMENT_METHODS, currency } from "../order.js";
 import { resetOrderStore } from "../orderStore.js";
+import { setZipIndexForTests } from "../zipIndex.js";
+import { TEST_ZIPS } from "./testZips.js";
 
 beforeEach(() => {
   resetOrderStore();
+  setZipIndexForTests(TEST_ZIPS);
 });
 
 function renderForm() {
@@ -89,7 +92,7 @@ test("reviews a complete pickup order and matches the summary snapshot", async (
 
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
-  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
   await user.click(screen.getByRole("button", { name: "Review order" }));
 
   expect(screen.getByText("Order summary")).toBeInTheDocument();
@@ -113,12 +116,107 @@ test("requires a ZIP code before reviewing a delivery order", async () => {
 
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
-  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
   await user.click(screen.getByRole("button", { name: "delivery" }));
   await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
   await user.click(screen.getByRole("button", { name: "Review order" }));
 
-  expect(screen.getByText("Enter a 5-digit ZIP code.")).toBeInTheDocument();
+  expect(screen.getByText("Enter a valid 5-digit ZIP code.")).toBeInTheDocument();
+});
+
+test("ZIP field is capped at 5 characters", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  const zip = screen.getByTestId("delivery-zip");
+  expect(zip).toHaveAttribute("maxLength", "5");
+  expect(zip).toHaveAttribute("autocomplete", "postal-code");
+  expect(zip).toHaveAttribute("inputmode", "numeric");
+  await user.type(zip, "606011234");
+  expect(zip).toHaveValue("60601");
+});
+
+test("phone field requests a telephone keypad", () => {
+  renderForm();
+  const phone = screen.getByPlaceholderText("(555) 012-3456");
+  expect(phone).toHaveAttribute("type", "tel");
+  expect(phone).toHaveAttribute("inputmode", "tel");
+  expect(phone).toHaveAttribute("autocomplete", "tel");
+});
+
+test("requires a 10-digit phone number before reviewing", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+
+  expect(screen.getByText("Enter a 10-digit phone number.")).toBeInTheDocument();
+});
+
+test("rejects a 5-digit ZIP that is not a real US ZIP", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const strawberry = FLAVORS[0];
+
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.click(increaseButton(strawberry, strawberry.products[0]));
+  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
+  await user.type(screen.getByTestId("delivery-zip"), "00000");
+
+  expect(screen.queryByTestId("order-shipping")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+  expect(screen.getByText("Enter a valid 5-digit ZIP code.")).toBeInTheDocument();
+});
+
+test("backspace on the phone hyphen removes a digit and keeps masking", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const input = screen.getByPlaceholderText("(555) 012-3456");
+  await user.type(input, "5550123456");
+  expect(input).toHaveValue("(555) 012-3456");
+
+  input.focus();
+  input.setSelectionRange(10, 10);
+  await user.keyboard("{Backspace}");
+
+  expect(input).toHaveValue("(555) 013-456");
+});
+
+test("delete on the phone hyphen removes the following digit and keeps masking", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const input = screen.getByPlaceholderText("(555) 012-3456");
+  await user.type(input, "5550123456");
+  expect(input).toHaveValue("(555) 012-3456");
+
+  input.focus();
+  input.setSelectionRange(9, 9);
+  await user.keyboard("{Delete}");
+
+  expect(input).toHaveValue("(555) 012-456");
+});
+
+test("deleting a middle phone digit remasks without dumping the caret at the end", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const input = screen.getByPlaceholderText("(555) 012-3456");
+  await user.type(input, "5550123456");
+  expect(input).toHaveValue("(555) 012-3456");
+
+  input.focus();
+  input.setSelectionRange(7, 7);
+  await user.keyboard("{Backspace}");
+
+  expect(input).toHaveValue("(555) 123-456");
+  expect(input.selectionStart).toBeLessThan(input.value.length);
 });
 
 test("shows shipping after a delivery ZIP and hides boxes and zone", async () => {
@@ -160,7 +258,7 @@ test("reviews a delivery order with hidden notification metadata", async () => {
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
-  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
   await user.click(screen.getByRole("button", { name: "delivery" }));
   await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
   await user.type(screen.getByTestId("delivery-zip"), "60601");
@@ -195,7 +293,7 @@ async function reviewPickupOrder(user) {
   const strawberry = FLAVORS[0];
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
-  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
+  await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
   await user.click(screen.getByRole("button", { name: "Review order" }));
 }
 
@@ -246,7 +344,9 @@ test("edit order returns to the form without clearing fields", async () => {
 
   expect(screen.getByRole("button", { name: "Review order" })).toBeInTheDocument();
   expect(screen.getByPlaceholderText("Jane Doe")).toHaveValue("Ada Lovelace");
-  expect(screen.getByPlaceholderText("(555) 012-3456")).toHaveValue("555-0100");
+  expect(screen.getByPlaceholderText("(555) 012-3456")).toHaveValue(
+    "(555) 012-3456"
+  );
   expect(screen.getByTestId("qty-strawberry-jam-8oz")).toHaveTextContent("1");
 
   await user.click(screen.getByRole("button", { name: "Review order" }));

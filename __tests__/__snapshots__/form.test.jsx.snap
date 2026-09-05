@@ -974,6 +974,9 @@ exports[`matches the initial form snapshot 1`] = `
               Phone
             </div>
             <input
+              autocomplete="tel"
+              inputmode="tel"
+              name="tel"
               placeholder="(555) 012-3456"
               style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(191, 227, 221); background: rgb(255, 255, 255); font-size: 15px; font-family: system-ui, -apple-system, sans-serif; color: rgb(22, 48, 44);"
               type="tel"
@@ -1200,7 +1203,7 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
               Ada Lovelace
             </div>
             <div>
-              555-0100
+              (555) 012-3456
             </div>
             <div>
               Pickup
@@ -1258,19 +1261,19 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
           id="order-notification-payload"
           type="application/json"
         >
-          {"name":"Ada Lovelace","phone":"555-0100","fulfillment":"pickup","address":"","zip":"","notes":"","paymentMethod":"","lines":[{"key":"strawberry-jam-8oz","label":"Strawberry 8oz jam","n":1,"amount":9}],"itemCount":1,"itemTotal":9,"shipping":{"cost":0,"estimatedBoxes":0,"zone":0},"total":9}
+          {"name":"Ada Lovelace","phone":"(555) 012-3456","fulfillment":"pickup","address":"","zip":"","notes":"","paymentMethod":"","lines":[{"key":"strawberry-jam-8oz","label":"Strawberry 8oz jam","n":1,"amount":9}],"itemCount":1,"itemTotal":9,"shipping":{"cost":0,"estimatedBoxes":0,"zone":0},"total":9}
         </script>
         <div
           style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;"
         >
           <a
-            href="sms:?&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20555-0100%0AFulfillment%3A%20Pickup"
+            href="sms:?&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20(555)%20012-3456%0AFulfillment%3A%20Pickup"
             style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(15, 118, 110); color: rgb(240, 251, 249);"
           >
             Text this order
           </a>
           <a
-            href="mailto:?subject=Jam%20order%20from%20Ada%20Lovelace&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20555-0100%0AFulfillment%3A%20Pickup"
+            href="mailto:?subject=Jam%20order%20from%20Ada%20Lovelace&body=Jam%20order%0A1%20x%20Strawberry%208oz%20jam%20%E2%80%94%20%249.00%0ATotal%20(1%20item)%3A%20%249.00%0AName%3A%20Ada%20Lovelace%0APhone%3A%20(555)%20012-3456%0AFulfillment%3A%20Pickup"
             style="display: block; text-align: center; padding: 13px 0px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: system-ui, -apple-system, sans-serif; background: rgb(255, 255, 255); color: rgb(15, 118, 110); border: 1.5px solid rgb(15, 118, 110);"
           >
             Email this order

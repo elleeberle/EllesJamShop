@@ -1,12 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { useStore } from "@tanstack/react-store";
 import {
   FLAVORS,
   PAYMENT_METHODS,
+  applyPhoneInputChange,
   buildOrderNotification,
   currency,
   flavorSubtotal,
+  formatPhone,
   getQty,
+  normalizePhone,
   normalizeZip,
   orderQuote,
   paymentMethodLabel,
@@ -17,6 +20,7 @@ import {
   patchOrder,
   resetOrderStore,
 } from "./orderStore.js";
+import { ensureZipIndex } from "./zipCache.js";
 
 export default function JamOrderForm() {
   const {
@@ -32,6 +36,21 @@ export default function JamOrderForm() {
   } = useStore(orderStore);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const phoneInputRef = useRef(null);
+  const phoneCaretRef = useRef(null);
+
+  useEffect(() => {
+    ensureZipIndex();
+  }, []);
+
+  useLayoutEffect(() => {
+    const input = phoneInputRef.current;
+    const caret = phoneCaretRef.current;
+    if (input && caret != null) {
+      input.setSelectionRange(caret, caret);
+      phoneCaretRef.current = null;
+    }
+  }, [phone]);
 
   const quote = useMemo(
     () => orderQuote({ qty, fulfillment, zip }),
@@ -70,7 +89,7 @@ export default function JamOrderForm() {
       `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(total)}`,
       "",
       `Name: ${name}`,
-      `Phone: ${phone}`,
+      `Phone: ${formatPhone(phone) || phone}`,
       fulfillment === "pickup" ? "Fulfillment: Pickup" : "Fulfillment: Delivery",
       fulfillment === "delivery" && address ? `Address: ${address}` : null,
       fulfillment === "delivery" && normalizeZip(zip)
@@ -92,8 +111,8 @@ export default function JamOrderForm() {
       setError("Enter your name.");
       return;
     }
-    if (!phone.trim()) {
-      setError("Enter a phone number.");
+    if (!normalizePhone(phone)) {
+      setError("Enter a 10-digit phone number.");
       return;
     }
     if (fulfillment === "delivery" && !address.trim()) {
@@ -101,11 +120,23 @@ export default function JamOrderForm() {
       return;
     }
     if (fulfillment === "delivery" && !normalizeZip(zip)) {
-      setError("Enter a 5-digit ZIP code.");
+      setError("Enter a valid 5-digit ZIP code.");
       return;
     }
     setError("");
     patchOrder({ step: "summary" });
+  }
+
+  function handlePhoneChange(e) {
+    const caret = e.target.selectionStart ?? e.target.value.length;
+    const { formatted, caret: nextCaret } = applyPhoneInputChange(
+      phone,
+      e.target.value,
+      caret,
+      e.nativeEvent.inputType
+    );
+    phoneCaretRef.current = nextCaret;
+    patchOrder({ phone: formatted });
   }
 
   function handleEditOrder() {
@@ -249,11 +280,15 @@ export default function JamOrderForm() {
               </Field>
               <Field label="Phone">
                 <input
+                  ref={phoneInputRef}
                   style={inputStyle}
                   value={phone}
-                  onChange={(e) => patchOrder({ phone: e.target.value })}
+                  onChange={handlePhoneChange}
                   placeholder="(555) 012-3456"
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  name="tel"
                 />
               </Field>
 
@@ -305,10 +340,17 @@ export default function JamOrderForm() {
                   <input
                     style={inputStyle}
                     value={zip}
-                    onChange={(e) => patchOrder({ zip: e.target.value })}
+                    onChange={(e) =>
+                      patchOrder({
+                        zip: e.target.value.replace(/\D/g, "").slice(0, 5),
+                      })
+                    }
                     placeholder="37919"
+                    type="text"
                     inputMode="numeric"
                     autoComplete="postal-code"
+                    name="postal-code"
+                    maxLength={5}
                     data-testid="delivery-zip"
                   />
                 </Field>
@@ -444,7 +486,7 @@ export default function JamOrderForm() {
                 }}
               >
                 <div>{name}</div>
-                <div>{phone}</div>
+                <div>{formatPhone(phone) || phone}</div>
                 <div>
                   {fulfillment === "pickup"
                     ? "Pickup"

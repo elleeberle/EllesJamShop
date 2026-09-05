@@ -1,12 +1,15 @@
 import {
   FLAVORS,
+  applyPhoneInputChange,
   applyQtyChange,
   buildOrderNotification,
   clampNonNegative,
   currency,
   estimatedBoxes,
   flavorSubtotal,
+  formatPhone,
   getQty,
+  normalizePhone,
   normalizeZip,
   orderLines,
   orderQuote,
@@ -18,9 +21,15 @@ import {
   smallBoxRate,
   zoneFromZip,
 } from "../order.js";
+import { setZipIndexForTests } from "../zipIndex.js";
+import { TEST_ZIPS } from "./testZips.js";
 
 const strawberry = FLAVORS.find((f) => f.id === "strawberry");
 const appleButter = FLAVORS.find((f) => f.id === "apple-butter");
+
+beforeEach(() => {
+  setZipIndexForTests(TEST_ZIPS);
+});
 
 function repeatChange(times, qty, flavorId, productId, delta) {
   let next = qty;
@@ -206,6 +215,8 @@ describe("zoneFromZip", () => {
     expect(zoneFromZip("123")).toBe(0);
     expect(zoneFromZip(null)).toBe(0);
     expect(normalizeZip("60601-1234")).toBe("60601");
+    expect(normalizeZip("00000")).toBe("");
+    expect(normalizeZip("123")).toBe("");
   });
 
   test("maps Knoxville-origin bands", () => {
@@ -279,6 +290,48 @@ describe("shippingQuote", () => {
   });
 });
 
+describe("phone helpers", () => {
+  test("normalizePhone requires exactly 10 digits and ignores a leading 1", () => {
+    expect(normalizePhone("(555) 012-3456")).toBe("5550123456");
+    expect(normalizePhone("5550123456")).toBe("5550123456");
+    expect(normalizePhone("555-0100")).toBe("");
+    expect(normalizePhone("+1 555 012 3456")).toBe("");
+    expect(normalizePhone("")).toBe("");
+    expect(normalizePhone(null)).toBe("");
+  });
+
+  test("formatPhone remasks leftover digits", () => {
+    expect(formatPhone("5")).toBe("(5");
+    expect(formatPhone("555012")).toBe("(555) 012");
+    expect(formatPhone("5550123456")).toBe("(555) 012-3456");
+    expect(formatPhone("555123456")).toBe("(555) 123-456");
+    expect(formatPhone("")).toBe("");
+  });
+
+  test("backspacing punctuation drops the adjacent digit", () => {
+    const prev = "(555) 012-3456";
+    const nextRaw = "(555) 0123456";
+    const caret = 9;
+    expect(applyPhoneInputChange(prev, nextRaw, caret)).toEqual({
+      formatted: "(555) 013-456",
+      caret: expect.any(Number),
+    });
+    expect(applyPhoneInputChange(prev, nextRaw, caret).formatted).toBe(
+      "(555) 013-456"
+    );
+  });
+
+  test("forward-delete on punctuation drops the following digit", () => {
+    const prev = "(555) 012-3456";
+    const nextRaw = "(555) 0123456";
+    const caret = 9;
+    expect(
+      applyPhoneInputChange(prev, nextRaw, caret, "deleteContentForward")
+        .formatted
+    ).toBe("(555) 012-456");
+  });
+});
+
 describe("orderQuote and buildOrderNotification", () => {
   const qty = { strawberry: { "jam-8oz": 3 } };
 
@@ -301,7 +354,7 @@ describe("orderQuote and buildOrderNotification", () => {
     const payload = buildOrderNotification({
       qty,
       name: "Ada",
-      phone: "555-0100",
+      phone: "5550123456",
       fulfillment: "delivery",
       address: "123 Orchard Lane",
       zip: "60601",
@@ -316,6 +369,7 @@ describe("orderQuote and buildOrderNotification", () => {
     expect(payload.itemTotal).toBe(27);
     expect(payload.total).toBe(41);
     expect(payload.zip).toBe("60601");
+    expect(payload.phone).toBe("(555) 012-3456");
     expect(payload.fulfillment).toBe("delivery");
     expect(payload.paymentMethod).toBe("");
   });
@@ -324,7 +378,7 @@ describe("orderQuote and buildOrderNotification", () => {
     const payload = buildOrderNotification({
       qty,
       name: "Ada",
-      phone: "555-0100",
+      phone: "5550123456",
       fulfillment: "pickup",
       paymentMethod: "venmo",
     });
@@ -336,7 +390,7 @@ describe("orderQuote and buildOrderNotification", () => {
     const payload = buildOrderNotification({
       qty,
       name: "Ada",
-      phone: "555-0100",
+      phone: "5550123456",
       paymentMethod: "bitcoin",
     });
 

@@ -1,3 +1,5 @@
+import { zipIndexHas } from "./zipIndex.js";
+
 export const JAM_PRODUCTS = [
   { id: "jam-8oz", name: "8oz jam", price: 9 },
   { id: "syrup-8oz", name: "8oz syrup", price: 8 },
@@ -143,7 +145,75 @@ export function estimatedBoxes(qty) {
 
 export function normalizeZip(zip) {
   const digits = String(zip ?? "").replace(/\D/g, "").slice(0, 5);
-  return digits.length === 5 ? digits : "";
+  if (digits.length !== 5 || !zipIndexHas(digits)) return "";
+  return digits;
+}
+
+export function phoneDigits(phone) {
+  return String(phone ?? "").replace(/\D/g, "").slice(0, 10);
+}
+
+export function normalizePhone(phone) {
+  const digits = String(phone ?? "").replace(/\D/g, "");
+  return digits.length === 10 ? digits : "";
+}
+
+export function formatPhone(phone) {
+  const digits = phoneDigits(phone);
+  if (digits.length === 0) return "";
+  if (digits.length < 4) return `(${digits}`;
+  if (digits.length < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+export function phoneDigitsBeforeCaret(value, caret) {
+  return String(value ?? "")
+    .slice(0, Math.max(0, caret ?? 0))
+    .replace(/\D/g, "").length;
+}
+
+export function caretFromDigitCount(formatted, digitCount) {
+  if (digitCount <= 0) return 0;
+  let seen = 0;
+  for (let i = 0; i < formatted.length; i += 1) {
+    if (/\d/.test(formatted[i])) {
+      seen += 1;
+      if (seen === digitCount) return i + 1;
+    }
+  }
+  return formatted.length;
+}
+
+export function applyPhoneInputChange(
+  prevFormatted,
+  nextRaw,
+  caret,
+  inputType
+) {
+  const prevDigits = phoneDigits(prevFormatted);
+  let nextDigits = phoneDigits(nextRaw);
+  let digitCaret = phoneDigitsBeforeCaret(nextRaw, caret);
+
+  if (
+    nextDigits.length === prevDigits.length &&
+    String(nextRaw ?? "").length < String(prevFormatted ?? "").length
+  ) {
+    if (inputType === "deleteContentForward") {
+      nextDigits =
+        nextDigits.slice(0, digitCaret) + nextDigits.slice(digitCaret + 1);
+    } else {
+      nextDigits =
+        nextDigits.slice(0, Math.max(0, digitCaret - 1)) +
+        nextDigits.slice(digitCaret);
+      digitCaret = Math.max(0, digitCaret - 1);
+    }
+  }
+
+  const formatted = formatPhone(nextDigits);
+  return {
+    formatted,
+    caret: caretFromDigitCount(formatted, digitCaret),
+  };
 }
 
 function prefixInRange(prefix, start, end) {
@@ -230,7 +300,7 @@ export function buildOrderNotification({
   const isDelivery = fulfillment === "delivery";
   return {
     name: name == null ? "" : String(name),
-    phone: phone == null ? "" : String(phone),
+    phone: formatPhone(phone),
     fulfillment: fulfillment == null ? "pickup" : String(fulfillment),
     address: isDelivery && address != null ? String(address) : "",
     zip: isDelivery ? normalizeZip(zip) : "",
