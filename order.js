@@ -20,12 +20,12 @@ export const JELLY_PRODUCTS = [
 ];
 
 export const FLAVORS = [
-  { id: "strawberry", name: "Strawberry", note: "Classic and sweet", products: JAM_PRODUCTS },
-  { id: "blueberry", name: "Blueberry", note: "Bright and fruity", products: JAM_PRODUCTS },
   { id: "apple-butter", name: "Apple butter", note: "Warm spice", products: BUTTER_PRODUCTS },
+  { id: "blackberry", name: "Blackberry", note: "Deep and rich", products: JAM_PRODUCTS },
+  { id: "blueberry", name: "Blueberry", note: "Bright and fruity", products: JAM_PRODUCTS },
   { id: "grape", name: "Grape", note: "Bold and jammy", products: JELLY_PRODUCTS },
   { id: "raspberry", name: "Raspberry", note: "Tart and bright", products: JAM_PRODUCTS },
-  { id: "blackberry", name: "Blackberry", note: "Deep and rich", products: JAM_PRODUCTS },
+  { id: "strawberry", name: "Strawberry", note: "Classic and sweet", products: JAM_PRODUCTS },
 ];
 
 export const PAYMENT_METHODS = [

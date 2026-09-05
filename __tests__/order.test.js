@@ -38,6 +38,11 @@ import { TEST_ZIPS } from "./testZips.js";
 const strawberry = FLAVORS.find((f) => f.id === "strawberry");
 const appleButter = FLAVORS.find((f) => f.id === "apple-butter");
 
+test("flavors are listed alphabetically by name", () => {
+  const names = FLAVORS.map((flavor) => flavor.name);
+  expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
+});
+
 beforeEach(() => {
   setZipIndexForTests(TEST_ZIPS);
 });

@@ -93,7 +93,7 @@ exports[`matches the initial form snapshot 1`] = `
           style="display: flex; flex-direction: column; gap: 12px;"
         >
           <div
-            data-testid="flavor-strawberry"
+            data-testid="flavor-apple-butter"
             style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
           >
             <div
@@ -103,33 +103,33 @@ exports[`matches the initial form snapshot 1`] = `
                 <div
                   style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
                 >
-                  Strawberry
+                  Apple butter
                 </div>
                 <div
                   style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
-                  Classic and sweet
+                  Warm spice
                 </div>
               </div>
               <div
-                data-testid="flavor-strawberry-subtotal"
+                data-testid="flavor-apple-butter-subtotal"
                 style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
               >
                 $0.00
               </div>
             </div>
             <div
-              data-testid="line-strawberry-jam-8oz"
+              data-testid="line-apple-butter-butter-8oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
                 <div
                   style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
                 >
-                  8oz jam
+                  8oz butter
                 </div>
                 <div
-                  data-testid="line-strawberry-jam-8oz-amount"
+                  data-testid="line-apple-butter-butter-8oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $9.00 each
@@ -139,7 +139,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Strawberry 8oz jam"
+                  aria-label="Decrease Apple butter 8oz butter"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -147,13 +147,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-strawberry-jam-8oz"
+                  data-testid="qty-apple-butter-butter-8oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Strawberry 8oz jam"
+                  aria-label="Increase Apple butter 8oz butter"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -162,7 +162,120 @@ exports[`matches the initial form snapshot 1`] = `
               </div>
             </div>
             <div
-              data-testid="line-strawberry-syrup-8oz"
+              data-testid="line-apple-butter-butter-12oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  12oz butter
+                </div>
+                <div
+                  data-testid="line-apple-butter-butter-12oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $12.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Apple butter 12oz butter"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-apple-butter-butter-12oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Apple butter 12oz butter"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-testid="flavor-blackberry"
+            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
+          >
+            <div
+              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
+            >
+              <div>
+                <div
+                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Blackberry
+                </div>
+                <div
+                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  Deep and rich
+                </div>
+              </div>
+              <div
+                data-testid="flavor-blackberry-subtotal"
+                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
+              >
+                $0.00
+              </div>
+            </div>
+            <div
+              data-testid="line-blackberry-jam-8oz"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
+            >
+              <div>
+                <div
+                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  8oz jam
+                </div>
+                <div
+                  data-testid="line-blackberry-jam-8oz-amount"
+                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
+                >
+                  $9.00 each
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: center; gap: 10px;"
+              >
+                <button
+                  aria-label="Decrease Blackberry 8oz jam"
+                  disabled=""
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  −
+                </button>
+                <span
+                  data-testid="qty-blackberry-jam-8oz"
+                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
+                >
+                  0
+                </span>
+                <button
+                  aria-label="Increase Blackberry 8oz jam"
+                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div
+              data-testid="line-blackberry-syrup-8oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
@@ -172,7 +285,7 @@ exports[`matches the initial form snapshot 1`] = `
                   8oz syrup
                 </div>
                 <div
-                  data-testid="line-strawberry-syrup-8oz-amount"
+                  data-testid="line-blackberry-syrup-8oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $8.00 each
@@ -182,7 +295,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Strawberry 8oz syrup"
+                  aria-label="Decrease Blackberry 8oz syrup"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -190,13 +303,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-strawberry-syrup-8oz"
+                  data-testid="qty-blackberry-syrup-8oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Strawberry 8oz syrup"
+                  aria-label="Increase Blackberry 8oz syrup"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -205,7 +318,7 @@ exports[`matches the initial form snapshot 1`] = `
               </div>
             </div>
             <div
-              data-testid="line-strawberry-syrup-4oz"
+              data-testid="line-blackberry-syrup-4oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
@@ -215,7 +328,7 @@ exports[`matches the initial form snapshot 1`] = `
                   4oz syrup
                 </div>
                 <div
-                  data-testid="line-strawberry-syrup-4oz-amount"
+                  data-testid="line-blackberry-syrup-4oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $5.00 each
@@ -225,7 +338,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Strawberry 4oz syrup"
+                  aria-label="Decrease Blackberry 4oz syrup"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -233,13 +346,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-strawberry-syrup-4oz"
+                  data-testid="qty-blackberry-syrup-4oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Strawberry 4oz syrup"
+                  aria-label="Increase Blackberry 4oz syrup"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -396,119 +509,6 @@ exports[`matches the initial form snapshot 1`] = `
                 </span>
                 <button
                   aria-label="Increase Blueberry 4oz syrup"
-                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
-                  type="button"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            data-testid="flavor-apple-butter"
-            style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
-          >
-            <div
-              style="display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px 10px;"
-            >
-              <div>
-                <div
-                  style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  Apple butter
-                </div>
-                <div
-                  style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  Warm spice
-                </div>
-              </div>
-              <div
-                data-testid="flavor-apple-butter-subtotal"
-                style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
-              >
-                $0.00
-              </div>
-            </div>
-            <div
-              data-testid="line-apple-butter-butter-8oz"
-              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
-            >
-              <div>
-                <div
-                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  8oz butter
-                </div>
-                <div
-                  data-testid="line-apple-butter-butter-8oz-amount"
-                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  $9.00 each
-                </div>
-              </div>
-              <div
-                style="display: flex; align-items: center; gap: 10px;"
-              >
-                <button
-                  aria-label="Decrease Apple butter 8oz butter"
-                  disabled=""
-                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
-                  type="button"
-                >
-                  −
-                </button>
-                <span
-                  data-testid="qty-apple-butter-butter-8oz"
-                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
-                >
-                  0
-                </span>
-                <button
-                  aria-label="Increase Apple butter 8oz butter"
-                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
-                  type="button"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <div
-              data-testid="line-apple-butter-butter-12oz"
-              style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
-            >
-              <div>
-                <div
-                  style="font-size: 14px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  12oz butter
-                </div>
-                <div
-                  data-testid="line-apple-butter-butter-12oz-amount"
-                  style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
-                >
-                  $12.00 each
-                </div>
-              </div>
-              <div
-                style="display: flex; align-items: center; gap: 10px;"
-              >
-                <button
-                  aria-label="Decrease Apple butter 12oz butter"
-                  disabled=""
-                  style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
-                  type="button"
-                >
-                  −
-                </button>
-                <span
-                  data-testid="qty-apple-butter-butter-12oz"
-                  style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
-                >
-                  0
-                </span>
-                <button
-                  aria-label="Increase Apple butter 12oz butter"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -787,7 +787,7 @@ exports[`matches the initial form snapshot 1`] = `
             </div>
           </div>
           <div
-            data-testid="flavor-blackberry"
+            data-testid="flavor-strawberry"
             style="background: rgb(255, 255, 255); border: 1px solid rgb(191, 227, 221); border-radius: 16px; overflow: hidden;"
           >
             <div
@@ -797,23 +797,23 @@ exports[`matches the initial form snapshot 1`] = `
                 <div
                   style="font-size: 16px; font-weight: 600; font-family: system-ui, -apple-system, sans-serif;"
                 >
-                  Blackberry
+                  Strawberry
                 </div>
                 <div
                   style="font-size: 13px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
-                  Deep and rich
+                  Classic and sweet
                 </div>
               </div>
               <div
-                data-testid="flavor-blackberry-subtotal"
+                data-testid="flavor-strawberry-subtotal"
                 style="font-size: 15px; font-weight: 700; font-family: system-ui, -apple-system, sans-serif; color: rgb(92, 138, 131); padding-top: 2px;"
               >
                 $0.00
               </div>
             </div>
             <div
-              data-testid="line-blackberry-jam-8oz"
+              data-testid="line-strawberry-jam-8oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
@@ -823,7 +823,7 @@ exports[`matches the initial form snapshot 1`] = `
                   8oz jam
                 </div>
                 <div
-                  data-testid="line-blackberry-jam-8oz-amount"
+                  data-testid="line-strawberry-jam-8oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $9.00 each
@@ -833,7 +833,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Blackberry 8oz jam"
+                  aria-label="Decrease Strawberry 8oz jam"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -841,13 +841,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-blackberry-jam-8oz"
+                  data-testid="qty-strawberry-jam-8oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Blackberry 8oz jam"
+                  aria-label="Increase Strawberry 8oz jam"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -856,7 +856,7 @@ exports[`matches the initial form snapshot 1`] = `
               </div>
             </div>
             <div
-              data-testid="line-blackberry-syrup-8oz"
+              data-testid="line-strawberry-syrup-8oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
@@ -866,7 +866,7 @@ exports[`matches the initial form snapshot 1`] = `
                   8oz syrup
                 </div>
                 <div
-                  data-testid="line-blackberry-syrup-8oz-amount"
+                  data-testid="line-strawberry-syrup-8oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $8.00 each
@@ -876,7 +876,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Blackberry 8oz syrup"
+                  aria-label="Decrease Strawberry 8oz syrup"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -884,13 +884,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-blackberry-syrup-8oz"
+                  data-testid="qty-strawberry-syrup-8oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Blackberry 8oz syrup"
+                  aria-label="Increase Strawberry 8oz syrup"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >
@@ -899,7 +899,7 @@ exports[`matches the initial form snapshot 1`] = `
               </div>
             </div>
             <div
-              data-testid="line-blackberry-syrup-4oz"
+              data-testid="line-strawberry-syrup-4oz"
               style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgb(230, 247, 244); background: rgb(255, 255, 255);"
             >
               <div>
@@ -909,7 +909,7 @@ exports[`matches the initial form snapshot 1`] = `
                   4oz syrup
                 </div>
                 <div
-                  data-testid="line-blackberry-syrup-4oz-amount"
+                  data-testid="line-strawberry-syrup-4oz-amount"
                   style="font-size: 12px; color: rgb(92, 138, 131); font-family: system-ui, -apple-system, sans-serif;"
                 >
                   $5.00 each
@@ -919,7 +919,7 @@ exports[`matches the initial form snapshot 1`] = `
                 style="display: flex; align-items: center; gap: 10px;"
               >
                 <button
-                  aria-label="Decrease Blackberry 4oz syrup"
+                  aria-label="Decrease Strawberry 4oz syrup"
                   disabled=""
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(191, 227, 221); background: rgb(234, 247, 244); color: rgb(207, 232, 227); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
@@ -927,13 +927,13 @@ exports[`matches the initial form snapshot 1`] = `
                   −
                 </button>
                 <span
-                  data-testid="qty-blackberry-syrup-4oz"
+                  data-testid="qty-strawberry-syrup-4oz"
                   style="min-width: 18px; text-align: center; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 15px;"
                 >
                   0
                 </span>
                 <button
-                  aria-label="Increase Blackberry 4oz syrup"
+                  aria-label="Increase Strawberry 4oz syrup"
                   style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgb(15, 118, 110); background: rgb(15, 118, 110); color: rgb(240, 251, 249); font-size: 18px; line-height: 0; font-weight: 700;"
                   type="button"
                 >

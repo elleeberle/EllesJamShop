@@ -12,6 +12,8 @@ beforeEach(() => {
   setZipIndexForTests(TEST_ZIPS);
 });
 
+const strawberry = FLAVORS.find((f) => f.id === "strawberry");
+
 function renderForm() {
   return render(<JamOrderForm />);
 }
@@ -48,8 +50,22 @@ test("renders the order form", () => {
   );
   expect(pickupDeadline.tagName).toBe("STRONG");
   expect(pickupDeadline).toHaveStyle({ fontStyle: "italic" });
-  expect(screen.getByText("Strawberry")).toBeInTheDocument();
-  expect(screen.getByText("Blueberry")).toBeInTheDocument();
+  const flavorOrder = FLAVORS.map((flavor) => flavor.name);
+  expect(flavorOrder).toEqual([
+    "Apple butter",
+    "Blackberry",
+    "Blueberry",
+    "Grape",
+    "Raspberry",
+    "Strawberry",
+  ]);
+  const flavorSections = flavorOrder.map((name) => screen.getByText(name));
+  for (let i = 1; i < flavorSections.length; i += 1) {
+    expect(
+      flavorSections[i - 1].compareDocumentPosition(flavorSections[i]) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  }
   expect(screen.getByTestId("order-item-count")).toHaveTextContent("0 items");
   expect(screen.getByRole("button", { name: "Review order" })).toBeInTheDocument();
 });
@@ -62,8 +78,6 @@ test("matches the initial form snapshot", () => {
 test("increments a flavor and updates the item count and total", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
 
@@ -88,8 +102,6 @@ test("shows an error when reviewing an empty order", async () => {
 test("reviews a complete pickup order and matches the summary snapshot", async () => {
   const user = userEvent.setup();
   const { container } = renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
   await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
@@ -112,8 +124,6 @@ test("reviews a complete pickup order and matches the summary snapshot", async (
 test("requires a ZIP code before reviewing a delivery order", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
   await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
@@ -147,8 +157,6 @@ test("phone field requests a telephone keypad", () => {
 test("requires a 10-digit phone number before reviewing", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
   await user.type(screen.getByPlaceholderText("(555) 012-3456"), "555-0100");
@@ -160,8 +168,6 @@ test("requires a 10-digit phone number before reviewing", async () => {
 test("rejects a 5-digit ZIP that is not a real US ZIP", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
@@ -222,8 +228,6 @@ test("deleting a middle phone digit remasks without dumping the caret at the end
 test("shows shipping after a delivery ZIP and hides boxes and zone", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
@@ -241,8 +245,6 @@ test("shows shipping after a delivery ZIP and hides boxes and zone", async () =>
 test("pickup does not show a shipping line", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
 
   expect(screen.queryByTestId("order-shipping")).not.toBeInTheDocument();
@@ -252,8 +254,6 @@ test("pickup does not show a shipping line", async () => {
 test("reviews a delivery order with hidden notification metadata", async () => {
   const user = userEvent.setup();
   renderForm();
-  const strawberry = FLAVORS[0];
-
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.click(increaseButton(strawberry, strawberry.products[0]));
@@ -290,7 +290,6 @@ test("reviews a delivery order with hidden notification metadata", async () => {
 const paymentMethodNames = PAYMENT_METHODS.map((method) => method.label);
 
 async function reviewPickupOrder(user, extra = {}) {
-  const strawberry = FLAVORS[0];
   await user.click(increaseButton(strawberry, strawberry.products[0]));
   await user.type(screen.getByPlaceholderText("Jane Doe"), extra.name ?? "Ada Lovelace");
   await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
@@ -528,10 +527,9 @@ describe("flavor subsection dollar amounts", () => {
 
   test("keeps other flavor subtotals at $0.00 when one subsection changes", () => {
     renderForm();
-    const strawberry = FLAVORS[0];
     fireEvent.click(increaseButton(strawberry, strawberry.products[0]));
 
-    FLAVORS.slice(1).forEach((flavor) => {
+    FLAVORS.filter((flavor) => flavor.id !== strawberry.id).forEach((flavor) => {
       expect(screen.getByTestId(`flavor-${flavor.id}-subtotal`)).toHaveTextContent(
         "$0.00"
       );
