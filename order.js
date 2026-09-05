@@ -1,3 +1,6 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import DOMPurify from "dompurify";
+import serialize from "serialize-javascript";
 import { zipIndexHas } from "./zipIndex.js";
 
 export const JAM_PRODUCTS = [
@@ -26,18 +29,112 @@ export const FLAVORS = [
 ];
 
 export const PAYMENT_METHODS = [
-  { id: "venmo", label: "Venmo" },
-  { id: "apple-pay", label: "Apple Pay" },
-  { id: "cash-app", label: "Cash App" },
+  {
+    id: "apple-pay",
+    label: "Apple Pay",
+    pickupOnly: true,
+    note: "Apple Pay (in-person only)",
+  },
+  { id: "cash-app", label: "Cash App", handle: "$Jamerelle" },
+  { id: "venmo", label: "Venmo", handle: "@Tychelle-Eberle" },
 ];
+
+export const NAME_MAX_LENGTH = 80;
+export const ADDRESS_MAX_LENGTH = 200;
+export const NOTES_MAX_LENGTH = 280;
+export const APPLE_PAY_DELIVERY_ERROR =
+  "Apple Pay is only available for pickup orders.";
+
+const PAYMENT_HOSTS = new Set([
+  "venmo.com",
+  "www.venmo.com",
+  "cash.app",
+  "www.cash.app",
+]);
 
 export function paymentMethodLabel(id) {
   const match = PAYMENT_METHODS.find((method) => method.id === id);
   return match ? match.label : "";
 }
 
-export function normalizePaymentMethod(id) {
-  return paymentMethodLabel(id) ? String(id) : "";
+export function normalizeFulfillment(fulfillment) {
+  return fulfillment === "delivery" ? "delivery" : "pickup";
+}
+
+export function isPaymentMethodAllowed(id, fulfillment) {
+  const method = PAYMENT_METHODS.find((item) => item.id === id);
+  if (!method) return false;
+  if (method.pickupOnly && normalizeFulfillment(fulfillment) === "delivery") {
+    return false;
+  }
+  return true;
+}
+
+export function normalizePaymentMethod(id, fulfillment) {
+  return isPaymentMethodAllowed(id, fulfillment) ? String(id) : "";
+}
+
+export function paymentSubmitError(paymentMethod, fulfillment) {
+  if (
+    String(paymentMethod) === "apple-pay" &&
+    normalizeFulfillment(fulfillment) === "delivery"
+  ) {
+    return APPLE_PAY_DELIVERY_ERROR;
+  }
+  return "";
+}
+
+export function sanitizeOrderText(value, maxLength) {
+  if (value == null) return "";
+  const cleaned = DOMPurify.sanitize(String(value), {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  });
+  const cap = Number.isFinite(maxLength) && maxLength >= 0 ? maxLength : NOTES_MAX_LENGTH;
+  return cleaned.trim().slice(0, cap);
+}
+
+export function paymentAmount(total) {
+  return clampNonNegative(total).toFixed(2);
+}
+
+export function venmoNote(notes) {
+  const cleaned = sanitizeOrderText(notes, NOTES_MAX_LENGTH)
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || "Jam order";
+}
+
+export function isAllowedPaymentUrl(url) {
+  if (!url || url === "about:blank") return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && PAYMENT_HOSTS.has(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function paymentLink(methodId, total, notes) {
+  const amount = paymentAmount(total);
+  if (methodId === "venmo") {
+    const base = sanitizeUrl("https://venmo.com/Tychelle-Eberle");
+    if (!isAllowedPaymentUrl(base)) return "";
+    const url = new URL(base);
+    url.searchParams.set("txn", "pay");
+    url.searchParams.set("amount", amount);
+    url.searchParams.set("note", venmoNote(notes));
+    return isAllowedPaymentUrl(url.toString()) ? url.toString() : "";
+  }
+  if (methodId === "cash-app") {
+    const base = sanitizeUrl(`https://cash.app/$Jamerelle/${amount}`);
+    return isAllowedPaymentUrl(base) ? base : "";
+  }
+  return "";
+}
+
+export function serializeOrderPayload(payload) {
+  return serialize(payload, { isJSON: true });
 }
 
 export function safeNumber(n) {
@@ -296,16 +393,17 @@ export function buildOrderNotification({
   notes,
   paymentMethod,
 } = {}) {
-  const quote = orderQuote({ qty, fulfillment, zip });
-  const isDelivery = fulfillment === "delivery";
+  const normalizedFulfillment = normalizeFulfillment(fulfillment);
+  const quote = orderQuote({ qty, fulfillment: normalizedFulfillment, zip });
+  const isDelivery = normalizedFulfillment === "delivery";
   return {
-    name: name == null ? "" : String(name),
+    name: sanitizeOrderText(name, NAME_MAX_LENGTH),
     phone: formatPhone(phone),
-    fulfillment: fulfillment == null ? "pickup" : String(fulfillment),
-    address: isDelivery && address != null ? String(address) : "",
+    fulfillment: normalizedFulfillment,
+    address: isDelivery ? sanitizeOrderText(address, ADDRESS_MAX_LENGTH) : "",
     zip: isDelivery ? normalizeZip(zip) : "",
-    notes: notes == null ? "" : String(notes),
-    paymentMethod: normalizePaymentMethod(paymentMethod),
+    notes: sanitizeOrderText(notes, NOTES_MAX_LENGTH),
+    paymentMethod: normalizePaymentMethod(paymentMethod, normalizedFulfillment),
     lines: quote.lines,
     itemCount: quote.itemCount,
     itemTotal: quote.itemTotal,

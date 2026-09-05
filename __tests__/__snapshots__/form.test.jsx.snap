@@ -1220,38 +1220,56 @@ exports[`reviews a complete pickup order and matches the summary snapshot 1`] = 
             Payment
           </summary>
           <div
-            style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"
+            style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;"
           >
-            <label
-              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
-            >
-              <input
-                name="payment-method"
-                type="radio"
-                value="venmo"
-              />
-              Venmo
-            </label>
-            <label
-              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
-            >
-              <input
-                name="payment-method"
-                type="radio"
-                value="apple-pay"
-              />
-              Apple Pay
-            </label>
-            <label
-              style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
-            >
-              <input
-                name="payment-method"
-                type="radio"
-                value="cash-app"
-              />
-              Cash App
-            </label>
+            <div>
+              <div
+                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
+              >
+                <label
+                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                >
+                  <input
+                    name="payment-method"
+                    type="radio"
+                    value="apple-pay"
+                  />
+                  Apple Pay
+                </label>
+              </div>
+            </div>
+            <div>
+              <div
+                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
+              >
+                <label
+                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                >
+                  <input
+                    name="payment-method"
+                    type="radio"
+                    value="cash-app"
+                  />
+                  Cash App
+                </label>
+              </div>
+            </div>
+            <div>
+              <div
+                style="display: flex; align-items: center; gap: 10px; opacity: 1;"
+              >
+                <label
+                  style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgb(22, 48, 44); cursor: pointer;"
+                >
+                  <input
+                    name="payment-method"
+                    type="radio"
+                    value="venmo"
+                  />
+                  Venmo
+                </label>
+              </div>
+            </div>
           </div>
         </details>
         <script

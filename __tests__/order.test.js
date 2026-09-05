@@ -1,5 +1,8 @@
 import {
+  ADDRESS_MAX_LENGTH,
   FLAVORS,
+  NAME_MAX_LENGTH,
+  NOTES_MAX_LENGTH,
   applyPhoneInputChange,
   applyQtyChange,
   buildOrderNotification,
@@ -9,16 +12,24 @@ import {
   flavorSubtotal,
   formatPhone,
   getQty,
+  isPaymentMethodAllowed,
+  normalizePaymentMethod,
   normalizePhone,
   normalizeZip,
   orderLines,
   orderQuote,
   orderTotals,
   packingSlots,
+  paymentAmount,
+  paymentLink,
+  paymentSubmitError,
   productSlots,
   safeNumber,
+  sanitizeOrderText,
+  serializeOrderPayload,
   shippingQuote,
   smallBoxRate,
+  venmoNote,
   zoneFromZip,
 } from "../order.js";
 import { setZipIndexForTests } from "../zipIndex.js";
@@ -395,5 +406,114 @@ describe("orderQuote and buildOrderNotification", () => {
     });
 
     expect(payload.paymentMethod).toBe("");
+  });
+
+  test("notification payload drops Apple Pay on delivery", () => {
+    const payload = buildOrderNotification({
+      qty,
+      name: "Ada",
+      phone: "5550123456",
+      fulfillment: "delivery",
+      address: "123 Orchard Lane",
+      zip: "60601",
+      paymentMethod: "apple-pay",
+    });
+
+    expect(payload.paymentMethod).toBe("");
+    expect(payload.fulfillment).toBe("delivery");
+  });
+
+  test("notification payload allowlists fulfillment and sanitizes free text", () => {
+    const payload = buildOrderNotification({
+      qty,
+      name: "<b>Ada</b>",
+      phone: "5550123456",
+      fulfillment: "overnight",
+      notes: "<img src=x onerror=alert(1)>Leave at door",
+    });
+
+    expect(payload.fulfillment).toBe("pickup");
+    expect(payload.name).toBe("Ada");
+    expect(payload.notes).toBe("Leave at door");
+  });
+});
+
+describe("payment helpers", () => {
+  test("paymentAmount formats two decimal places", () => {
+    expect(paymentAmount(9)).toBe("9.00");
+    expect(paymentAmount(41)).toBe("41.00");
+    expect(paymentAmount(-4)).toBe("0.00");
+  });
+
+  test("venmoNote uses sanitized form notes and falls back to Jam order", () => {
+    expect(venmoNote("")).toBe("Jam order");
+    expect(venmoNote("   ")).toBe("Jam order");
+    expect(venmoNote("Leave at door & ring")).toBe("Leave at door & ring");
+    expect(venmoNote("<b>Leave at door</b>")).toBe("Leave at door");
+    expect(venmoNote("Leave\nat\tdoor")).toBe("Leave at door");
+  });
+
+  test("Venmo payment links include the total and encoded notes", () => {
+    const url = paymentLink("venmo", 9, "Leave at door & ring");
+    const parsed = new URL(url);
+    expect(parsed.protocol).toBe("https:");
+    expect(parsed.hostname).toBe("venmo.com");
+    expect(parsed.pathname).toBe("/Tychelle-Eberle");
+    expect(parsed.searchParams.get("txn")).toBe("pay");
+    expect(parsed.searchParams.get("amount")).toBe("9.00");
+    expect(parsed.searchParams.get("note")).toBe("Leave at door & ring");
+  });
+
+  test("Venmo payment links fall back to Jam order when notes are blank", () => {
+    const url = paymentLink("venmo", 18, "   ");
+    expect(new URL(url).searchParams.get("note")).toBe("Jam order");
+  });
+
+  test("Cash App payment links include the cashtag and total", () => {
+    const url = paymentLink("cash-app", 9, "ignored");
+    expect(url).toMatch(/^https:\/\/cash\.app\//);
+    expect(url).toContain("Jamerelle");
+    expect(url).toContain("9.00");
+  });
+
+  test("Apple Pay has no payment link", () => {
+    expect(paymentLink("apple-pay", 9, "Jam order")).toBe("");
+  });
+
+  test("markup in notes cannot change the payment origin", () => {
+    const url = paymentLink("venmo", 9, "https://evil.example/</script>");
+    const parsed = new URL(url);
+    expect(parsed.hostname).toBe("venmo.com");
+    expect(parsed.pathname).toBe("/Tychelle-Eberle");
+  });
+
+  test("Apple Pay is allowed for pickup and blocked for delivery", () => {
+    expect(isPaymentMethodAllowed("apple-pay", "pickup")).toBe(true);
+    expect(isPaymentMethodAllowed("apple-pay", "delivery")).toBe(false);
+    expect(isPaymentMethodAllowed("venmo", "delivery")).toBe(true);
+    expect(normalizePaymentMethod("apple-pay", "delivery")).toBe("");
+    expect(normalizePaymentMethod("apple-pay", "pickup")).toBe("apple-pay");
+    expect(paymentSubmitError("apple-pay", "delivery")).toBe(
+      "Apple Pay is only available for pickup orders."
+    );
+    expect(paymentSubmitError("venmo", "delivery")).toBe("");
+    expect(paymentSubmitError("", "delivery")).toBe("");
+  });
+
+  test("sanitizeOrderText strips HTML and caps length", () => {
+    expect(sanitizeOrderText("<img src=x onerror=alert(1)>Hello", 80)).toBe(
+      "Hello"
+    );
+    expect(sanitizeOrderText("a".repeat(NAME_MAX_LENGTH + 10), NAME_MAX_LENGTH)).toHaveLength(
+      NAME_MAX_LENGTH
+    );
+    expect(sanitizeOrderText(null, ADDRESS_MAX_LENGTH)).toBe("");
+    expect(sanitizeOrderText("ok", NOTES_MAX_LENGTH)).toBe("ok");
+  });
+
+  test("serializeOrderPayload escapes script breakouts and stays JSON", () => {
+    const serialized = serializeOrderPayload({ notes: "</script>" });
+    expect(serialized).not.toMatch(/<\/script/i);
+    expect(JSON.parse(serialized)).toEqual({ notes: "</script>" });
   });
 });

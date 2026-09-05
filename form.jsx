@@ -1,7 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { useStore } from "@tanstack/react-store";
+import { QRCodeSVG } from "qrcode.react";
 import {
+  ADDRESS_MAX_LENGTH,
   FLAVORS,
+  NAME_MAX_LENGTH,
+  NOTES_MAX_LENGTH,
   PAYMENT_METHODS,
   applyPhoneInputChange,
   buildOrderNotification,
@@ -9,10 +13,15 @@ import {
   flavorSubtotal,
   formatPhone,
   getQty,
+  isPaymentMethodAllowed,
   normalizePhone,
   normalizeZip,
   orderQuote,
+  paymentLink,
   paymentMethodLabel,
+  paymentSubmitError,
+  sanitizeOrderText,
+  serializeOrderPayload,
 } from "./order.js";
 import {
   changeOrderQty,
@@ -59,6 +68,10 @@ export default function JamOrderForm() {
   const { lines, itemCount, itemTotal, shipping, total } = quote;
   const showShipping = fulfillment === "delivery" && shipping.zone > 0;
   const selectedPaymentLabel = paymentMethodLabel(paymentMethod);
+  const safeName = sanitizeOrderText(name, NAME_MAX_LENGTH);
+  const safeAddress = sanitizeOrderText(address, ADDRESS_MAX_LENGTH);
+  const safeNotes = sanitizeOrderText(notes, NOTES_MAX_LENGTH);
+  const submitError = paymentSubmitError(paymentMethod, fulfillment);
   const notification = useMemo(
     () =>
       buildOrderNotification({
@@ -88,14 +101,14 @@ export default function JamOrderForm() {
       showShipping ? `Shipping: ${currency(shipping.cost)}` : null,
       `Total (${itemCount} item${itemCount === 1 ? "" : "s"}): ${currency(total)}`,
       "",
-      `Name: ${name}`,
+      `Name: ${safeName}`,
       `Phone: ${formatPhone(phone) || phone}`,
       fulfillment === "pickup" ? "Fulfillment: Pickup" : "Fulfillment: Delivery",
-      fulfillment === "delivery" && address ? `Address: ${address}` : null,
+      fulfillment === "delivery" && safeAddress ? `Address: ${safeAddress}` : null,
       fulfillment === "delivery" && normalizeZip(zip)
         ? `ZIP: ${normalizeZip(zip)}`
         : null,
-      notes ? `Notes: ${notes}` : null,
+      safeNotes ? `Notes: ${safeNotes}` : null,
       selectedPaymentLabel ? `Payment: ${selectedPaymentLabel}` : null,
     ]
       .filter(Boolean)
@@ -145,10 +158,27 @@ export default function JamOrderForm() {
   }
 
   function handleCopy() {
+    if (guardOutbound()) return;
     navigator.clipboard?.writeText(buildSummary()).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
+  }
+
+  function guardOutbound() {
+    const message = paymentSubmitError(paymentMethod, fulfillment);
+    if (message) {
+      setError(message);
+      return true;
+    }
+    setError("");
+    return false;
+  }
+
+  function handleOutboundClick(e) {
+    if (guardOutbound()) {
+      e.preventDefault();
+    }
   }
 
   function handleReset() {
@@ -157,10 +187,14 @@ export default function JamOrderForm() {
     setCopied(false);
   }
 
-  const smsHref = `sms:?&body=${encodeURIComponent(buildSummary())}`;
-  const mailHref = `mailto:?subject=${encodeURIComponent(
-    `Jam order from ${name}`
-  )}&body=${encodeURIComponent(buildSummary())}`;
+  const smsHref = submitError
+    ? "#"
+    : `sms:?&body=${encodeURIComponent(buildSummary())}`;
+  const mailHref = submitError
+    ? "#"
+    : `mailto:?subject=${encodeURIComponent(
+        `Jam order from ${safeName}`
+      )}&body=${encodeURIComponent(buildSummary())}`;
 
   return (
     <div
@@ -302,6 +336,9 @@ export default function JamOrderForm() {
                         patchOrder({
                           fulfillment: opt,
                           ...(opt === "pickup" ? { zip: "" } : {}),
+                          ...(opt === "delivery" && paymentMethod === "apple-pay"
+                            ? { paymentMethod: "" }
+                            : {}),
                         });
                       }}
                       style={{
@@ -485,23 +522,42 @@ export default function JamOrderForm() {
                   lineHeight: 1.6,
                 }}
               >
-                <div>{name}</div>
+                <div>{safeName}</div>
                 <div>{formatPhone(phone) || phone}</div>
                 <div>
                   {fulfillment === "pickup"
                     ? "Pickup"
-                    : `Delivery — ${address}${
+                    : `Delivery — ${safeAddress}${
                         normalizeZip(zip) ? ` ${normalizeZip(zip)}` : ""
                       }`}
                 </div>
-                {notes && <div>Note: {notes}</div>}
+                {safeNotes && <div>Note: {safeNotes}</div>}
               </div>
             </div>
 
             <PaymentAccordion
               paymentMethod={paymentMethod}
-              onSelect={(id) => patchOrder({ paymentMethod: id })}
+              fulfillment={fulfillment}
+              total={total}
+              notes={notes}
+              onSelect={(id) => {
+                if (!isPaymentMethodAllowed(id, fulfillment)) return;
+                patchOrder({ paymentMethod: id });
+              }}
             />
+
+            {error && (
+              <p
+                style={{
+                  color: "#B45309",
+                  fontSize: 14,
+                  marginTop: 12,
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {error}
+              </p>
+            )}
 
             <script
               id="order-notification-payload"
@@ -510,19 +566,21 @@ export default function JamOrderForm() {
               hidden
               aria-hidden="true"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(notification),
+                __html: serializeOrderPayload(notification),
               }}
             />
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
               <a
                 href={smsHref}
+                onClick={handleOutboundClick}
                 style={{ ...ctaStyle, background: "#0F766E", color: "#F0FBF9" }}
               >
                 Text this order
               </a>
               <a
                 href={mailHref}
+                onClick={handleOutboundClick}
                 style={{
                   ...ctaStyle,
                   background: "#FFFFFF",
@@ -660,7 +718,7 @@ export default function JamOrderForm() {
   );
 }
 
-function PaymentAccordion({ paymentMethod, onSelect }) {
+function PaymentAccordion({ paymentMethod, onSelect, fulfillment, total, notes }) {
   const selectedLabel = paymentMethodLabel(paymentMethod);
 
   return (
@@ -689,32 +747,106 @@ function PaymentAccordion({ paymentMethod, onSelect }) {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 10,
+          gap: 12,
           marginTop: 14,
         }}
       >
-        {PAYMENT_METHODS.map((method) => (
-          <label
-            key={method.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              fontSize: 15,
-              color: "#16302C",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="radio"
-              name="payment-method"
-              value={method.id}
-              checked={paymentMethod === method.id}
-              onChange={() => onSelect(method.id)}
-            />
-            {method.label}
-          </label>
-        ))}
+        {PAYMENT_METHODS.map((method) => {
+          const disabled =
+            Boolean(method.pickupOnly) && fulfillment === "delivery";
+          const selected = paymentMethod === method.id;
+          const payUrl = selected ? paymentLink(method.id, total, notes) : "";
+
+          return (
+            <div key={method.id}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  opacity: disabled ? 0.55 : 1,
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    fontSize: 15,
+                    color: "#16302C",
+                    cursor: disabled ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value={method.id}
+                    checked={selected}
+                    disabled={disabled}
+                    onChange={() => onSelect(method.id)}
+                  />
+                  {method.label}
+                </label>
+                {disabled && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#5C8A83",
+                    }}
+                  >
+                    Pickup only
+                  </span>
+                )}
+              </div>
+              {selected && method.pickupOnly && !disabled && (
+                <p
+                  data-testid="apple-pay-note"
+                  style={{
+                    margin: "8px 0 0 28px",
+                    fontSize: 13,
+                    color: "#3F6560",
+                  }}
+                >
+                  {method.note}
+                </p>
+              )}
+              {selected && method.handle && payUrl && (
+                <div
+                  style={{
+                    margin: "10px 0 0 28px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <a
+                    href={payUrl}
+                    data-testid={`payment-handle-${method.id}`}
+                    style={{
+                      color: "#0F766E",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      textDecoration: "none",
+                    }}
+                  >
+                    {method.handle}
+                  </a>
+                  <div data-testid={`payment-qr-${method.id}`}>
+                    <QRCodeSVG
+                      value={payUrl}
+                      size={168}
+                      title={`QR code to pay ${currency(total)} with ${method.label}`}
+                    />
+                  </div>
+                  <span style={{ fontSize: 13, color: "#3F6560" }}>
+                    Scan to pay {currency(total)}
+                  </span>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </details>
   );

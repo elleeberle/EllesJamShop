@@ -1,9 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import JamOrderForm from "../form.jsx";
 import { FLAVORS, PAYMENT_METHODS, currency } from "../order.js";
-import { resetOrderStore } from "../orderStore.js";
+import { patchOrder, resetOrderStore } from "../orderStore.js";
 import { setZipIndexForTests } from "../zipIndex.js";
 import { TEST_ZIPS } from "./testZips.js";
 
@@ -289,15 +289,29 @@ test("reviews a delivery order with hidden notification metadata", async () => {
 
 const paymentMethodNames = PAYMENT_METHODS.map((method) => method.label);
 
-async function reviewPickupOrder(user) {
+async function reviewPickupOrder(user, extra = {}) {
   const strawberry = FLAVORS[0];
   await user.click(increaseButton(strawberry, strawberry.products[0]));
-  await user.type(screen.getByPlaceholderText("Jane Doe"), "Ada Lovelace");
+  await user.type(screen.getByPlaceholderText("Jane Doe"), extra.name ?? "Ada Lovelace");
   await user.type(screen.getByPlaceholderText("(555) 012-3456"), "5550123456");
+  if (extra.notes) {
+    await user.type(
+      screen.getByPlaceholderText("Allergies, gift note, preferred pickup time..."),
+      extra.notes
+    );
+  }
   await user.click(screen.getByRole("button", { name: "Review order" }));
 }
 
-test("review shows the same payment choices for pickup and delivery", async () => {
+async function switchToDeliveryReview(user) {
+  await user.click(screen.getByRole("button", { name: "Edit order" }));
+  await user.click(screen.getByRole("button", { name: "delivery" }));
+  await user.type(screen.getByPlaceholderText("123 Orchard Lane"), "123 Orchard Lane");
+  await user.type(screen.getByTestId("delivery-zip"), "37919");
+  await user.click(screen.getByRole("button", { name: "Review order" }));
+}
+
+test("review enables Apple Pay for pickup and disables it for delivery", async () => {
   const user = userEvent.setup();
   renderForm();
   await reviewPickupOrder(user);
@@ -305,8 +319,13 @@ test("review shows the same payment choices for pickup and delivery", async () =
   const pickupAccordion = screen.getByTestId("payment-accordion");
   expect(within(pickupAccordion).getByText("Payment")).toBeInTheDocument();
   paymentMethodNames.forEach((label) => {
-    expect(within(pickupAccordion).getByRole("radio", { name: label })).toBeInTheDocument();
+    expect(within(pickupAccordion).getByRole("radio", { name: label })).toBeEnabled();
   });
+  expect(
+    within(pickupAccordion)
+      .getAllByRole("radio")
+      .map((radio) => radio.getAttribute("value"))
+  ).toEqual(["apple-pay", "cash-app", "venmo"]);
 
   await user.click(screen.getByRole("button", { name: "Edit order" }));
   await user.click(screen.getByRole("button", { name: "delivery" }));
@@ -315,9 +334,124 @@ test("review shows the same payment choices for pickup and delivery", async () =
   await user.click(screen.getByRole("button", { name: "Review order" }));
 
   const deliveryAccordion = screen.getByTestId("payment-accordion");
-  paymentMethodNames.forEach((label) => {
-    expect(within(deliveryAccordion).getByRole("radio", { name: label })).toBeInTheDocument();
+  expect(within(deliveryAccordion).getByRole("radio", { name: "Venmo" })).toBeEnabled();
+  expect(within(deliveryAccordion).getByRole("radio", { name: "Cash App" })).toBeEnabled();
+  expect(within(deliveryAccordion).getByRole("radio", { name: "Apple Pay" })).toBeDisabled();
+  expect(within(deliveryAccordion).getByText("Pickup only")).toBeInTheDocument();
+});
+
+test("selecting Venmo shows a handle, QR code, and amount", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("radio", { name: "Venmo" }));
+
+  expect(screen.getByText("Payment · Venmo")).toBeInTheDocument();
+  const handle = screen.getByTestId("payment-handle-venmo");
+  expect(handle).toHaveTextContent("@Tychelle-Eberle");
+  expect(handle.getAttribute("href")).toContain("venmo.com");
+  expect(screen.getByTestId("payment-qr-venmo").querySelector("svg")).toBeTruthy();
+  expect(screen.getByText("Scan to pay $9.00")).toBeInTheDocument();
+});
+
+test("selecting Cash App shows a handle and QR code", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("radio", { name: "Cash App" }));
+
+  const handle = screen.getByTestId("payment-handle-cash-app");
+  expect(handle).toHaveTextContent("$Jamerelle");
+  expect(handle.getAttribute("href")).toContain("cash.app");
+  expect(screen.getByTestId("payment-qr-cash-app").querySelector("svg")).toBeTruthy();
+});
+
+test("selecting Apple Pay on pickup shows an in-person note and no QR", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+
+  await user.click(screen.getByRole("radio", { name: "Apple Pay" }));
+
+  expect(screen.getByText("Payment · Apple Pay")).toBeInTheDocument();
+  expect(screen.getByTestId("apple-pay-note")).toHaveTextContent(
+    "Apple Pay (in-person only)"
+  );
+  expect(screen.queryByTestId("payment-qr-apple-pay")).not.toBeInTheDocument();
+});
+
+test("switching to delivery clears a selected Apple Pay method", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+  await user.click(screen.getByRole("radio", { name: "Apple Pay" }));
+  expect(screen.getByText("Payment · Apple Pay")).toBeInTheDocument();
+
+  await switchToDeliveryReview(user);
+
+  expect(screen.getByText("Payment")).toBeInTheDocument();
+  expect(screen.queryByText("Payment · Apple Pay")).not.toBeInTheDocument();
+  expect(screen.getByRole("radio", { name: "Apple Pay" })).not.toBeChecked();
+});
+
+test("delivery send actions reject Apple Pay even if it is forced on", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user);
+  await switchToDeliveryReview(user);
+  await act(async () => {
+    patchOrder({ paymentMethod: "apple-pay" });
   });
+
+  const sms = screen.getByRole("link", { name: "Text this order" });
+  const email = screen.getByRole("link", { name: "Email this order" });
+  expect(sms).toHaveAttribute("href", "#");
+  expect(email).toHaveAttribute("href", "#");
+
+  await user.click(sms);
+  expect(
+    screen.getByText("Apple Pay is only available for pickup orders.")
+  ).toBeInTheDocument();
+
+  await user.click(email);
+  expect(
+    screen.getByText("Apple Pay is only available for pickup orders.")
+  ).toBeInTheDocument();
+
+  const writeText = jest.fn();
+  const clipboardDesc = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText },
+  });
+  try {
+    await user.click(screen.getByRole("button", { name: "Copy order details" }));
+    expect(writeText).not.toHaveBeenCalled();
+  } finally {
+    if (clipboardDesc) {
+      Object.defineProperty(navigator, "clipboard", clipboardDesc);
+    } else {
+      delete navigator.clipboard;
+    }
+  }
+});
+
+test("hostile notes are sanitized on the review card and payload", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await reviewPickupOrder(user, {
+    notes: "<img src=x onerror=alert(1)>Leave at door",
+  });
+
+  expect(screen.getByText("Note: Leave at door")).toBeInTheDocument();
+  expect(screen.queryByText(/onerror/i)).not.toBeInTheDocument();
+
+  const payloadNode = screen.getByTestId("order-notification-payload");
+  expect(payloadNode.innerHTML).not.toMatch(/<\/script/i);
+  const payload = JSON.parse(payloadNode.textContent);
+  expect(payload.notes).toBe("Leave at door");
 });
 
 test("selecting a payment method updates the accordion and order text", async () => {
